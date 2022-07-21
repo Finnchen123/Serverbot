@@ -1,0 +1,15 @@
+{
+  "name": "serverbot",
+  "version": "1.0.0",
+  "description": "Server and Whitelist bot for 38.ID",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Finnchen123",
+  "license": "ISC",
+  "dependencies": {
+    "js-yaml": "^4.1.0",
+    "steam-server-query": "^1.1.3"
+  }
+}
