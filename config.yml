@@ -1,18 +1,59 @@
-REFRESH_TIME: 10000
+# Refresh interval for the whitelist and status bot in seconds
+REFRESH_TIME: 60
 
+# All the servers you want to monitor
 SERVERS:
+  # If you have multiple servers you can add them to this list. Just copy the SERVER_1 block and paste it similar to SERVER_2 and SERVER_3
   SERVER_1:
+    # "IP:Port"
+    # example: "127.0.0.1:80"
     ADDRESS: "176.57.168.195:28315"
-    WHITELIST_BOT: yes
-    STATUS_BOT: yes
+    # Do you want to include playtime from this server to give out VIP (true/false)?
+    WHITELIST_BOT: true
+    # Do you want to include the status check for this server (true/false)?
+    STATUS_BOT: true
+    # If the server is offline, how do you want the servername to be displayed?
+    SERVERNAME: "[38.] Infanterie Division I | 38inf.de | > German Language"
+    # The messageID the bot uses to edit in discord (default: "0")
+    MESSAGE_ID: "999973465106939974"
+    # Public server stats address from the RCON tool (https://github.com/MarechJ/hll_rcon_tool). Write "none" if not needed
+    PUBLIC_STATS: "https://rcon1.38id.de/api/public_info"
+    # Link to RCON tool for Whitelist bot. Write "none" if not needed
+    # IMPORTANT: If you have "WHITELIST_BOT: true", you have to add a RCON link.
+    RCON: "https://rcon1.38id.de/"
   SERVER_2:
     ADDRESS: "176.57.140.83:28315"
-    WHITELIST_BOT: yes
-    STATUS_BOT: yes
+    WHITELIST_BOT: true
+    STATUS_BOT: true
+    SERVERNAME: "[38.] Infanterie Division II | 38inf.de | > German Language"
+    MESSAGE_ID: "999973466251985026"
+    PUBLIC_STATS: "https://rcon2.38id.de/api/public_info"
+    RCON: "https://rcon2.38id.de/"
   SERVER_3:
     ADDRESS: "176.57.173.2:28415"
-    WHITELIST_BOT: no
-    STATUS_BOT: yes
+    WHITELIST_BOT: false
+    STATUS_BOT: true
+    SERVERNAME: "[38.] Infanterie Division III | Eventserver"
+    MESSAGE_ID: "999973467103445062"
+    PUBLIC_STATS: "https://rcon3.38id.de/api/public_info"
+    RCON: "none"
 
-STATUS_BOT:
+STATUS_BOT_DISCORD:
+  # The link to the discord webhook. Tutorial on how to create a webhook: https://support.discord.com/hc/en-us/articles/228383668-Intro-to-Webhooks
   WEBHOOK: "https://discord.com/api/webhooks/999897001737072761/B3iKcFXh0kO9aa-X0SV5Qq1Q_3fwufW_7KuDObNLSHq5CXtY_vNVTTAmQDV3hMuPF8pe"
+  # All discord colors are supported. You can find the extended list here: https://gist.github.com/thomasbnt/b6f455e2c7d743b796917fa3c205f812
+  # A small excerpt: 5763719 (Green), 16705372 (Yellow), 15548997 (Red), 3426654 (Navy), 1752220 (Aqua)
+  COLOR_ONLINE: 5763719
+  COLOR_OFFLINE: 15548997
+  # The link to the image displayed in the status message
+  IMAGE: "https://cdn.discordapp.com/attachments/675743920931602462/985636707686842408/BannerEagle.png"
+
+WHITELIST_BOT:
+  # Add your clan tag or another identification to the list to exclude the players matching the tag from the VIP remove
+  EXCLUDED: ["[38.]","[38.R]"]
+  # How long does a player have (in days) to get HOURS_TO_REACH until it gets reset?
+  TIME_TO_PLAY: 30
+  # How long does a player have (in days) the VIP status?
+  VIP_AMOUNT: 30
+  # How many hours does the player have to play?
+  HOURS_TO_REACH: 200

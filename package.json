@@ -9,6 +9,8 @@
   "author": "Finnchen123",
   "license": "ISC",
   "dependencies": {
+    "axios": "^0.27.2",
+    "discord.js": "^14.0.3",
     "js-yaml": "^4.1.0",
     "steam-server-query": "^1.1.3"
   }
