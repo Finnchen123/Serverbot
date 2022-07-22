@@ -1,0 +1,17 @@
+REFRESH_TIME: 10000
+
+WHITELIST_BOT:
+  SERVERCOUNT: 3
+  SERVERS:
+    SERVER_1:
+      IP: "176.57.168.195"
+      PORT: "28315"
+    SERVER_2:
+      IP: "176.57.140.83"
+      PORT: "28315"
+    SERVER_3:
+      IP: "176.57.173.2"
+      PORT: "28415"
+
+DISCORD_BOT:
+  WEBHOOK: ""
