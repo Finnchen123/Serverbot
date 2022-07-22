@@ -1,52 +1,44 @@
-class Player{
-    constructor(username, steamid, playtimeTotal, playtime, timestamp_playtime, hasVIP, timestamp_vip, hasDonated, timestamp_donation){
-        this.username = username;
-        this.steamid = steamid;
-        this.playtimeTotal = playtimeTotal;
-        this.playtime = playtime;
-        this.timestamp_playtime = timestamp_playtime;
-        this.hasVIP = hasVIP;
-        this.timestamp_vip = timestamp_vip;
-        this.hasDonated = hasDonated;
-        this.timestamp_donation = timestamp_donation;
-    }
+require('dotenv').config();
 
-    isClanMember(keywords){
-        for(var i = 0; i < keywords.length; i++){
-            if(this.username.search(keywords[i])){
-                return true;
+const mysql = require('mysql');
+
+const logger = require('./logger');
+
+const config = {
+    host     : '192.168.1.48',
+    user     :  process.env.DB_USERNAME,
+    password :  process.env.DB_PASSWORD,
+    database : 'whitelist'
+};
+
+//username, steamid, playtimeTotal, playtime, unix_playtime, hasVIP, unix_vip, hasDonated, unix_donation
+async function loadPlayers(){
+    var players = Array();
+    let conn;
+    try{
+        connection = mysql.createConnection(config);
+        connection.connect(function(err) {
+            if(err) {
+                logger.logWarning(err);
             }
-        }
-        return false;
+        });
+        connection.query(
+            'SELECT * FROM players',
+			[],
+			(error, results) => {
+				if (error) {
+                    logger.logWarning("Unable to load players");
+				} else {
+                    players = JSON.parse(results);
+				}
+			}
+        );
+    } catch(err){
+        console.log(err);
+    } finally {
+        if (conn) return conn.end();
     }
-
-    shouldGiveVIP(daysMax){
-        var seconds = (Date.now() / 1000) - this.timestamp_playtime;
-        var days = seconds / (60 * 60 * 24);
-        if(days >= daysMax){
-            return true;
-        }
-        return false;
-    }
-
-    shouldRemoveVIP(daysMax){
-        if(!this.hasDonated){
-            var seconds = (Date.now() / 1000) - this.timestamp_vip;
-            var days = seconds / (60 * 60 * 24);
-            if(days >= daysMax){
-                return true;
-            }
-        }
-        return false;
-    }
+    return players;
 }
 
-function loadPlayers(){
-
-}
-
-function createDatabase(){
-
-}
-
-module.exports = {loadPlayers, createDatabase, Player}
+module.exports = {loadPlayers}

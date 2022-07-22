@@ -31,7 +31,7 @@ async function queryServers() {
         try {
             response = await steam.queryGameServerInfo(address);
             if (hasWhitelistBot) {
-                getPlayers(address);
+                //getPlayers(address);
             }
             if(hasStatusBot){
                 displayText = "Current map: " + response["map"] + "\r\n Players: " + response["players"] + "/" + response["maxPlayers"] + "\r\n Public: " + (response["visibility"] ? "No" : "Yes");
@@ -93,6 +93,35 @@ async function getPublicInfo(url){
     return result;
 }
 
+function isClanMember(keywords){
+    for(var i = 0; i < keywords.length; i++){
+        if(this.username.search(keywords[i])){
+            return true;
+        }
+    }
+    return false;
+}
+
+function shouldGiveVIP(daysMax){
+    var seconds = (Date.now() / 1000) - this.timestamp_playtime;
+    var days = seconds / (60 * 60 * 24);
+    if(days >= daysMax){
+        return true;
+    }
+    return false;
+}
+
+function shouldRemoveVIP(daysMax){
+    if(!this.hasDonated){
+        var seconds = (Date.now() / 1000) - this.timestamp_vip;
+        var days = seconds / (60 * 60 * 24);
+        if(days >= daysMax){
+            return true;
+        }
+    }
+    return false;
+}
+
 async function run() {
     while (true) {
         if (config == null) {
@@ -107,7 +136,7 @@ async function run() {
                     break;
                 }
                 logger.logInformation("Preparing database and loading players");
-                database.loadPlayers(config);
+                players = database.loadPlayers();
             } catch (e) {
                 logger.logError("Unable to load config file. Please contact your system administrator");
                 break;
