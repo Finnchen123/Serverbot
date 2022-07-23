@@ -29,7 +29,7 @@ async function loadPlayers(){
 				if (error) {
                     logger.logWarning("Unable to load players");
 				} else {
-                    players = JSON.parse(results);
+                    players = results;
 				}
 			}
         );

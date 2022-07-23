@@ -8,9 +8,11 @@ const axios = require('axios');
 const logger = require('./logger');
 const discord = require("./discord");
 const database = require("./database");
+const rcon = require("./RCONConnector");
 
 var config;
 var players = Array();
+var vips = Array();
 
 async function queryServers() {
     var address;
@@ -20,38 +22,43 @@ async function queryServers() {
     var displayText;
     var messageId;
 
-    for (var i = 1; i <= Object.keys(config["SERVERS"]).length; i++) {
-        address = config["SERVERS"]["SERVER_" + i]["ADDRESS"];
-        hasWhitelistBot = config["SERVERS"]["SERVER_" + i]["WHITELIST_BOT"];
-        hasStatusBot = config["SERVERS"]["SERVER_" + i]["STATUS_BOT"];
-        messageId = config["SERVERS"]["SERVER_" + i]["MESSAGE_ID"];
+    Object.keys(config["SERVERS"]).forEach(server => {
+        address = config["SERVERS"][server]["ADDRESS"];
+        hasWhitelistBot = config["SERVERS"][server]["WHITELIST_BOT"];
+        hasStatusBot = config["SERVERS"][server]["STATUS_BOT"];
+        messageId = config["SERVERS"][server]["MESSAGE_ID"];
 
-        logger.logInformation("Query for server #"+i+": " + address);
+        logger.logInformation("Query for server: "+server);
 
         try {
-            response = await steam.queryGameServerInfo(address);
+            response = steam.queryGameServerInfo(address);
             if (hasWhitelistBot) {
-                //getPlayers(address);
+                logger.logInformation("Loading players for server "+server);
+                steam.queryGameServerPlayer(address).then(playerResponse => {
+                    handlePlayers(playerResponse, config["SERVERS"][server]["RCON"]);
+                }).catch((err) => {
+                    logger.logError("Unable to load players from server "+server);
+                });
             }
             if(hasStatusBot){
                 displayText = "Current map: " + response["map"] + "\r\n Players: " + response["players"] + "/" + response["maxPlayers"] + "\r\n Public: " + (response["visibility"] ? "No" : "Yes");
-                displayText = displayText + "\r\n" + await getPublicInfo(config["SERVERS"]["SERVER_" + i]["PUBLIC_STATS"]);
+                displayText = displayText + "\r\n" + getPublicInfo(config["SERVERS"][server]["PUBLIC_STATS"]);
                 discord.displayServer(response["name"], displayText, config["STATUS_BOT_DISCORD"]["COLOR_ONLINE"], config["STATUS_BOT_DISCORD"]["IMAGE"], messageId);
             }
         } catch(e) {
             if(hasStatusBot){
-                discord.displayServer(config["SERVERS"]["SERVER_" + i]["SERVERNAME"], "The server is currently offline", config["STATUS_BOT_DISCORD"]["COLOR_OFFLINE"], config["STATUS_BOT_DISCORD"]["IMAGE"], messageId);
+                discord.displayServer(config["SERVERS"][server]["SERVERNAME"], "The server is currently offline", config["STATUS_BOT_DISCORD"]["COLOR_OFFLINE"], config["STATUS_BOT_DISCORD"]["IMAGE"], messageId);
             }
         }
-    }
+    })
 }
 
-function getPlayers(server) {
-    steam.queryGameServerPlayer(server).then(playerResponse => {
-        console.log(JSON.stringify(playerResponse));
-    }).catch((err) => {
-        console.error(err);
-    });
+async function handlePlayers(steamPlayers, urlConfig){
+    var cookies = await rcon.loginRCON(urlConfig + "api/login");
+    //var rconPlayers = rcon.getRCONPlayers(urlConfig, cookies);
+    var vips = rcon.getVIPs(urlConfig, cookies);
+    //console.log(steamPlayers);
+    rcon.logoutRCON(urlConfig + "api/logout", cookies);
 }
 
 async function getPublicInfo(url){

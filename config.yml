@@ -23,7 +23,7 @@ SERVERS:
     RCON: "https://rcon1.38id.de/"
   SERVER_2:
     ADDRESS: "176.57.140.83:28315"
-    WHITELIST_BOT: true
+    WHITELIST_BOT: false
     STATUS_BOT: false
     SERVERNAME: "[38.] Infanterie Division II | 38inf.de | > German Language"
     MESSAGE_ID: "999973466251985026"
@@ -55,5 +55,5 @@ WHITELIST_BOT:
   TIME_TO_PLAY: 30
   # How long does a player have (in days) the VIP status?
   VIP_AMOUNT: 30
-  # How many hours does the player have to play?
+  # How many hours does a player have to play?
   HOURS_TO_REACH: 200
