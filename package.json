@@ -9,7 +9,10 @@
   "author": "Finnchen123",
   "license": "ISC",
   "dependencies": {
+    "@discordjs/builders": "^1.0.0",
+    "@discordjs/rest": "^1.0.0",
     "axios": "^0.27.2",
+    "discord-api-types": "^0.36.3",
     "discord.js": "^14.0.3",
     "dotenv": "^16.0.1",
     "js-yaml": "^4.1.0",

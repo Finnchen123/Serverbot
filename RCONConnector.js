@@ -5,9 +5,8 @@ const axios = require('axios');
 const logger = require('./logger');
 
 
-async function getRCONPlayers(url, cookies){
+function getRCONPlayers(url, cookies){
     var data = "";
-    var result = Array();
 
     var config = {
         method: 'get',
@@ -19,16 +18,9 @@ async function getRCONPlayers(url, cookies){
         data : data
     };
 
-    await axios(config)
-        .then(function (response) {
-            logger.logInformation("Got players from RCON tool at " + url);
-            response.data["result"]["stats"].forEach(player => {
-                result.push(player["player"] + "" + player["steam_id_64"]);
-            });
-        })
-        .catch(function (error) {
-            logger.logError("Unable to receive players from RCON tool at " + url);
-        });
+    return axios(config).catch(function (error) {
+        logger.logError("Unable to receive players from RCON tool at " + url);
+    });
 }
 
 function logoutRCON(url, cookies){
@@ -53,8 +45,7 @@ function logoutRCON(url, cookies){
         });
 }
 
-async function loginRCON(url){
-    var result = "";
+function loginRCON(url){
     var data = JSON.stringify({
         "username": process.env.RCON_USERNAME,
         "password": process.env.RCON_PASSWORD
@@ -69,21 +60,13 @@ async function loginRCON(url){
         data : data
     };
 
-    await axios(config)
-        .then(function (response) {
-            logger.logInformation("Connected to RCON tool at " + url);
-            result = response["headers"]["set-cookie"][0].split(';')[0] + "; " + response["headers"]["set-cookie"][1].split(';')[0];
-        })
-        .catch(function (error) {
-            logger.logError("Unable to connect to RCON tool at " + url);
-        });
-    
-    return result;
+    return axios(config).catch(function (error) {
+        logger.logError("Unable to connect to RCON tool at " + url);
+    });
 }
 
-async function getVIPs(url, cookies){
+function getVIPs(url, cookies){
     var data = "";
-    var result = Array();
 
     var config = {
         method: 'get',
@@ -95,18 +78,29 @@ async function getVIPs(url, cookies){
         data : data
     };
 
-    await axios(config)
-        .then(function (response) {
-            logger.logInformation("Got VIPs from RCON tool at " + url);
-            response.data.split("\n").forEach(line => {
-                result.push(line.slice(0,17));
-            })
-        })
-        .catch(function (error) {
-            logger.logError("Unable to receive VIPs from RCON tool at " + url);
-        });
-    
-    return result;
+    return axios(config).catch(function (error) {
+        logger.logError("Unable to receive VIPs from RCON tool at " + url);
+    });
 }
 
-module.exports = {getRCONPlayers, logoutRCON, loginRCON, getVIPs};
+function getUserdata(url, cookies, steamid){
+    var data = JSON.stringify({
+        "steam_id_64": steamid,
+    });
+    
+    var config = {
+        method: 'get',
+        url: url + "/api/player",
+        headers: { 
+            'Content-Type': 'application/json',
+            'Cookie': cookies
+        },
+        data : data
+    };
+
+    return axios(config).catch(function (error) {
+            logger.logError("Unable to receive playerdata from RCON tool for player " + steamid);
+    });
+}
+
+module.exports = {getRCONPlayers, logoutRCON, loginRCON, getVIPs, getUserdata};

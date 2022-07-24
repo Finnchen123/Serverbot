@@ -5,40 +5,121 @@ const mysql = require('mysql');
 const logger = require('./logger');
 
 const config = {
-    host     : '192.168.1.48',
-    user     :  process.env.DB_USERNAME,
-    password :  process.env.DB_PASSWORD,
-    database : 'whitelist'
+    host: '192.168.1.48',
+    user: process.env.DB_USERNAME,
+    password: process.env.DB_PASSWORD,
+    database: 'whitelist'
 };
 
 //username, steamid, playtimeTotal, playtime, unix_playtime, hasVIP, unix_vip, hasDonated, unix_donation
-async function loadPlayers(){
-    var players = Array();
-    let conn;
-    try{
-        connection = mysql.createConnection(config);
-        connection.connect(function(err) {
-            if(err) {
-                logger.logWarning(err);
+function loadPlayer(steamid) {
+    return new Promise(function (resolve, reject) {
+        var connection;
+        try {
+            connection = mysql.createConnection(config);
+            connection.connect(function (err) {
+                if (err) {
+                    logger.logWarning(err);
+                }
+            });
+            connection.query(
+                'SELECT * FROM players where steamid = ?',
+                [steamid],
+                (error, results) => {
+                    if (error) {
+                        return reject("Unable to load player");
+                    } else {
+                        resolve(results[0]);
+                    }
+                }
+            );
+        } catch (err) {
+            return reject("Unable to connect to database");
+        } finally {
+            if (connection) {
+                connection.end();
             }
-        });
-        connection.query(
-            'SELECT * FROM players',
-			[],
-			(error, results) => {
-				if (error) {
-                    logger.logWarning("Unable to load players");
-				} else {
-                    players = results;
-				}
-			}
-        );
-    } catch(err){
-        console.log(err);
-    } finally {
-        if (conn) return conn.end();
-    }
-    return players;
+        }
+    })
 }
 
-module.exports = {loadPlayers}
+function loadSteamIDs() {
+    return new Promise(function (resolve, reject) {
+        var players = Array();
+        var connection;
+        try {
+            connection = mysql.createConnection(config);
+            connection.query(
+                'SELECT steamid FROM players',
+                [],
+                (error, results) => {
+                    if (error) {
+                        return reject("Unable to load players");
+                    } else {
+                        results.forEach(row => {
+                            players.push(row["steamid"]);
+                        });
+                        resolve(players);
+                    }
+                }
+            );
+        } catch (err) {
+            return reject(err);//"Unable to connect to database");
+        } finally {
+            if (connection) {
+                connection.end();
+            }
+        }
+    })
+}
+
+function addPlayer(username, steamid, playtimeTotal, hasVIP, unix_vip, hasDonated, unix_donation) {
+    return new Promise(function (resolve, reject) {
+        var connection;
+        try {
+            connection = mysql.createConnection(config);
+            connection.query(
+                'INSERT INTO players (username, steamid, playtimeTotal, playtime, unix_playtime, hasVIP, unix_vip, hasDonated, unix_donation) VALUES (?,?,?,?,?,?,?,?,?)',
+                [username, steamid, playtimeTotal, 0, (Date.now() / 1000), hasVIP, unix_vip, hasDonated, unix_donation],
+                (error, results) => {
+                    if (error) {
+                        return reject("Unable to save player " + username);
+                    }
+                    else {
+                        resolve();
+                    }
+                }
+            );
+        } catch (err) {
+            return reject("Unable to connect to database");
+        } finally {
+            if (connection) {
+                connection.end();
+            }
+        }
+    })
+}
+
+function updatePlayer(playername, steamid, playtimeTotal, playtime, unixPlaytime, hasVIP, unixVIP) {
+    var connection;
+    try {
+        connection = mysql.createConnection(config);
+        connection.query(
+            'UPDATE players SET username=?, playtimeTotal=?, playtime=?, unix_playtime=?, hasVIP=?, unix_vip=? WHERE steamid=?',
+            [playername, playtimeTotal, playtime, unixPlaytime, hasVIP, unixVIP, steamid],
+            (error, results) => {
+                if (error) {
+                    logger.logError(error);
+                }
+            }
+        );
+    } catch (err) {
+        logger.logError("Unable to connect to database");
+    } finally {
+        if (connection) {
+            connection.end();
+        }
+    }
+}
+
+module.exports = { loadPlayer, loadSteamIDs, addPlayer, updatePlayer }
