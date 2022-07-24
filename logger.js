@@ -1,3 +1,5 @@
+var messages = Array();
+
 function logInformation(message) {
     console.log("INFO: " + message);
 }
@@ -7,7 +9,19 @@ function logWarning(message) {
 }
 
 function logError(message) {
-    console.error("ERROR: " + message);   
+    console.error("ERROR: " + message);
 }
 
-module.exports = {logInformation, logWarning, logError};
+function logVIP(message){
+    console.log("VIP: " + message);
+    messages.push("VIP: " + message);
+}
+
+function sendToDiscord(discord){
+    messages.forEach(message => {
+        discord.sendLog(message);
+    })
+    messages = Array();
+}
+
+module.exports = {logInformation, logWarning, logError, sendToDiscord, logVIP};

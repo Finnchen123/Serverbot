@@ -1,9 +1,11 @@
 require('dotenv').config();
 
 const axios = require('axios');
+const FormData = require('form-data');
+const fs = require('fs');
 
 const logger = require('./logger');
-
+const response = require("./responseHandler");
 
 function getRCONPlayers(url, cookies){
     var data = "";
@@ -19,7 +21,7 @@ function getRCONPlayers(url, cookies){
     };
 
     return axios(config).catch(function (error) {
-        logger.logError("Unable to receive players from RCON tool at " + url);
+        logger.logError("[WHITELIST] Unable to receive players from RCON tool at " + url);
     });
 }
 
@@ -37,11 +39,8 @@ function logoutRCON(url, cookies){
     };
 
     axios(config)
-        .then(function (response) {
-            logger.logInformation("Disconnected from RCON tool at " + url);
-        })
         .catch(function (error) {
-            logger.logError("Unable to disconnect from RCON tool at " + url);
+            logger.logError("[GENERAL] Unable to disconnect from RCON tool at " + url);
         });
 }
 
@@ -61,7 +60,7 @@ function loginRCON(url){
     };
 
     return axios(config).catch(function (error) {
-        logger.logError("Unable to connect to RCON tool at " + url);
+        logger.logError("[GENERAL] Unable to connect to RCON tool at " + url);
     });
 }
 
@@ -78,9 +77,7 @@ function getVIPs(url, cookies){
         data : data
     };
 
-    return axios(config).catch(function (error) {
-        logger.logError("Unable to receive VIPs from RCON tool at " + url);
-    });
+    return axios(config);
 }
 
 function getUserdata(url, cookies, steamid){
@@ -99,7 +96,7 @@ function getUserdata(url, cookies, steamid){
     };
 
     return axios(config).catch(function (error) {
-            logger.logError("Unable to receive playerdata from RCON tool for player " + steamid);
+            logger.logError("[WHITELIST] Unable to receive playerdata from RCON tool for player " + steamid);
     });
 }
 

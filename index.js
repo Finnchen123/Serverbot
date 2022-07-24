@@ -4,11 +4,13 @@ const steam = require("steam-server-query");
 const yaml = require('js-yaml');
 const fs = require('fs');
 const axios = require('axios');
+const utf8 = require('utf8');
 
 const logger = require('./logger');
 const discord = require("./discord");
 const database = require("./database");
 const rcon = require("./RCONConnector");
+const response = require("./responseHandler");
 
 var config;
 var players = Array();
@@ -29,43 +31,89 @@ async function queryServers() {
         hasStatusBot = server["STATUS_BOT"];
         messageId = server["MESSAGE_ID"];
 
-        logger.logInformation("Query for server #"+(i+1));
+        logger.logInformation("[GENERAL] Query for server #"+(i+1));
 
         try {
             //Get steam server information
             response = await steam.queryGameServerInfo(address);
             if (hasWhitelistBot) {
                 if(!updatedPlayers){
-                    logger.logInformation("Loading players for server #"+(i+1));
+                    logger.logInformation("[WHITELIST] Loading players for server #"+(i+1));
                     handlePlayers(server["RCON"]);
                     updatedPlayers = true;
+                }
+                else{
+                    addPlayerToDB(server["RCON"]);
                 }
             }
             if(hasStatusBot){
                 displayText = "Current map: " + response["map"] + "\r\n Players: " + response["players"] + "/" + response["maxPlayers"] + "\r\n Public: " + (response["visibility"] ? "No" : "Yes");
                 displayText = displayText + "\r\n" + await getPublicInfo(server["PUBLIC_STATS"]);
-                discord.displayServer(response["name"], displayText, config["STATUS_BOT_DISCORD"]["COLOR_ONLINE"], config["STATUS_BOT_DISCORD"]["IMAGE"], config["STATUS_BOT_DISCORD"]["DC_CHANNEL_STATUS"]);
+                discord.displayServer(response["name"], displayText, config["STATUS_BOT_DISCORD"]["COLOR_ONLINE"], config["STATUS_BOT_DISCORD"]["IMAGE"]);
             }
         } catch(e) {
-            logger.logError("Unable to load server #"+(i+1) + " :" + e);
+            logger.logError("[GENERAL] Unable to load server #"+(i+1) + " :" + e);
             if(hasStatusBot){
-                discord.displayServer(server["SERVERNAME"], "The server is currently offline", config["STATUS_BOT_DISCORD"]["COLOR_OFFLINE"], config["STATUS_BOT_DISCORD"]["IMAGE"], config["STATUS_BOT_DISCORD"]["DC_CHANNEL_STATUS"]);
+                discord.displayServer(server["SERVERNAME"], "The server is currently offline", config["STATUS_BOT_DISCORD"]["COLOR_OFFLINE"], config["STATUS_BOT_DISCORD"]["IMAGE"]);
             }
         }
     }
-
-    Object.keys(config["SERVERS"]).forEach(server => {
-        
-    })
 }
 
 async function handlePlayers(urlConfig){
     //Login
-    var cookies = await formatCookies(urlConfig);
+    var result = await rcon.loginRCON(urlConfig + "api/login");
+    var cookies = await response.formatCookies(result);
     //Get online players from RCON tool
-    var rconPlayers = await formatRCONPlayers(urlConfig, cookies);
+    result = await rcon.getRCONPlayers(urlConfig, cookies);
+    var rconPlayers = await response.formatRCONPlayers(result);
+    var vips = await rcon.getVIPs(urlConfig, cookies);
+    vips = vips.data;
     var userdata;
     var dbPlayer;
+    var username = "";
+    
+    for(var i = 0; i < rconPlayers.length; i++){
+        //Get userdata from rcontool
+        userdata = await rcon.getUserdata(urlConfig, cookies, rconPlayers[i]);
+        
+        if(userdata){
+            userdata = userdata.data["result"];
+        }
+        if(userdata != null){
+            username = utf8.encode(userdata["names"][0]["name"]);
+        }
+        //Add player to list and DB if not already there
+        if(!players.includes(rconPlayers[i].toString())){
+            try{
+                if(userdata != null){
+                    players.push(rconPlayers[i]);
+                    await database.addPlayer(rconPlayers[i].toString(), (userdata["total_playtime_seconds"] / 3600), false, 0, false, 0, username);
+                }
+            }catch(ex){
+                logger.logError("[WHITELIST] " + ex);
+            }
+        }
+        //Load player from DB
+        dbPlayer = await database.loadPlayer(rconPlayers[i].toString());
+        if(dbPlayer){
+            updatePlayer(dbPlayer, userdata["total_playtime_seconds"], userdata["current_playtime_seconds"], rconPlayers[i], dbPlayer["hasDonated"], username);
+        }
+    }
+
+    rcon.logoutRCON(urlConfig + "api/logout", cookies);
+}
+
+async function addPlayerToDB(urlConfig){
+    //Login
+    var result = await rcon.loginRCON(urlConfig + "api/login");
+    var cookies = await response.formatCookies(result);
+    //Get online players from RCON tool
+    result = await rcon.getRCONPlayers(urlConfig, cookies);
+    var rconPlayers = await response.formatRCONPlayers(result);
+    var userdata;
+    var dbPlayer;
+    var username = "";
     
     for(var i = 0; i < rconPlayers.length; i++){
         //Get userdata from rcontool
@@ -73,26 +121,41 @@ async function handlePlayers(urlConfig){
         if(userdata){
             userdata = userdata.data["result"];
         }
+        if(userdata != null){
+            username = utf8.encode(userdata["names"][0]["name"]);
+        }
         //Add player to list and DB if not already there
         if(!players.includes(rconPlayers[i].toString())){
-            players.push(rconPlayers[i]);
-            await database.addPlayer(userdata["names"][0]["name"], rconPlayers[i].toString(), (userdata["total_playtime_seconds"] / 3600), false, 0, false, 0);
-        }
-        //Load player from DB
-        dbPlayer = await database.loadPlayer(rconPlayers[i].toString());
-        if(dbPlayer){
-            updatePlayer(dbPlayer, userdata["total_playtime_seconds"], userdata["current_playtime_seconds"], rconPlayers[i], userdata["names"][0]["name"], dbPlayer["hasDonated"]);
+            try{
+                if(userdata != null){
+                    players.push(rconPlayers[i]);
+                    await database.addPlayer(rconPlayers[i].toString(), (userdata["total_playtime_seconds"] / 3600), false, 0, false, 0, username);
+                }
+            }catch(ex){
+                logger.logError("[WHITELIST] " + ex);
+            }
         }
     }
     rcon.logoutRCON(urlConfig + "api/logout", cookies);
 }
 
-function updatePlayer(player, totalPlaytime, playtime, steamid, playername, hasDonated){
+function updatePlayer(player, totalPlaytime, playtime, steamid, hasDonated, playername){
     var timePlayed;
     var daysPassed;
     var hasVIP = false;
     var unixPlaytime = 0;
     var unixVIP = 0;
+
+    //Check if VIP has run out
+    if(hasVIP){
+        if(unixVIP != 0){
+            daysPassed = ((Date.now() / 1000) -  player["unix_vip"]) / 86400;
+            if(daysPassed >= config["WHITELIST_BOT"]["VIP_AMOUNT"]){
+                hasVIP = false;
+                unixVIP = 0;
+            }
+        }
+    }
 
     //Check if player reached the time played goal from config file
     timePlayed = ((totalPlaytime / 3600) - player["playtimeTotal"]) + (playtime / 3600);
@@ -117,7 +180,7 @@ function updatePlayer(player, totalPlaytime, playtime, steamid, playername, hasD
 
     //Check if player has excluded nameparts
     config["WHITELIST_BOT"]["EXCLUDED"].forEach(key => {
-        if(playername.search(key) != -1){
+        if(playername.includes(key)){
             hasVIP = true;
             unixVIP = 0;
         }
@@ -129,41 +192,13 @@ function updatePlayer(player, totalPlaytime, playtime, steamid, playername, hasD
         unixVIP = 0;
     }
 
-    //Check if VIP has run out
-    if(hasVIP){
-        daysPassed = ((Date.now() / 1000) -  player["unix_vip"]) / 86400;
-        if(daysPassed >= config["WHITELIST_BOT"]["VIP_AMOUNT"]){
-            hasVIP = false;
-            unixVIP = 0;
-        }
-    }
-
-    database.updatePlayer(playername, steamid, (totalPlaytime / 3600), timePlayed, unixPlaytime, hasVIP, unixVIP);
-}
-
-async function formatCookies(urlConfig){
-    var result = await rcon.loginRCON(urlConfig + "api/login");
-    if(result){
-        result = result["headers"]["set-cookie"][0].split(';')[0] + "; " + result["headers"]["set-cookie"][1].split(';')[0];
-    }
-    return result;
-}
-
-async function formatRCONPlayers(urlConfig, cookies){
-    var result = await rcon.getRCONPlayers(urlConfig, cookies);
-    var rconPlayers = Array();
-    if(result){
-        result = result.data["result"]["stats"].forEach(player => {
-            rconPlayers.push(player["steam_id_64"]);
-        });
-    }
-    return rconPlayers;
+    database.updatePlayer(steamid, (totalPlaytime / 3600), timePlayed, unixPlaytime, hasVIP, unixVIP, playername);
 }
 
 async function getPublicInfo(url){
     var result = "";
     if(url != "none"){
-        logger.logInformation("Getting public stats from: " + url);
+        logger.logInformation("[STATUS] Getting public stats from: " + url);
         var response = await axios(url);
         var start = response.data["result"]["current_map"]["start"];
         var nextMap = response.data["result"]["next_map"];
@@ -205,24 +240,20 @@ async function run() {
         if (config == null) {
             try {
                 config = yaml.load(fs.readFileSync('./config.yml', 'utf8'));
-                logger.logInformation("Loaded configuration");
-                await discord.startBot(config);
-                logger.logInformation("Preparing database and loading steam ids");
-                players = await database.loadSteamIDs();
             } catch (e) {
-                if(e.search("ERROR") != -1){
-                    logger.logError(e.replace("ERROR:", ""));
-                }
-                else{
-                    logger.logError("Unable to load config file. Please contact your system administrator");
-                }
+                logger.logError("[GENERAL] Unable to load config file. Please contact your system administrator");
                 break;
             }
+            players = await database.loadSteamIDs();
+            await discord.startBot(config, players);
+            logger.logInformation("[GENERAL] Loaded configuration");
+            logger.logInformation("[GENERAL] Preparing database and loading steam ids");
         }
-        logger.logInformation("Starting server query");
-        discord.clearStatusChannel(config["STATUS_BOT_DISCORD"]["DC_CHANNEL_STATUS"]);
-        queryServers();
-        logger.logInformation("Waiting " + config["REFRESH_TIME"] + " seconds until next query");
+        logger.logInformation("[GENERAL] Starting server query");
+        await discord.clearStatusChannel();
+        await queryServers();
+        logger.logInformation("[GENERAL] Waiting " + config["REFRESH_TIME"] + " seconds until next query");
+        logger.sendToDiscord(discord);
         await new Promise(r => setTimeout(r, config["REFRESH_TIME"] * 1000));
         today = new Date();
         if(today.getHours == 1 && (today.getMinutes > 0 && today.getMinutes < 5)){

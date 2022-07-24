@@ -3,6 +3,7 @@ require('dotenv').config();
 const mysql = require('mysql');
 
 const logger = require('./logger');
+const discord = require("./discord");
 
 const config = {
     host: '192.168.1.48',
@@ -11,7 +12,7 @@ const config = {
     database: 'whitelist'
 };
 
-//username, steamid, playtimeTotal, playtime, unix_playtime, hasVIP, unix_vip, hasDonated, unix_donation
+//steamid, playtimeTotal, playtime, unix_playtime, hasVIP, unix_vip, hasDonated, unix_donation
 function loadPlayer(steamid) {
     return new Promise(function (resolve, reject) {
         var connection;
@@ -73,7 +74,7 @@ function loadSteamIDs() {
     })
 }
 
-function addPlayer(username, steamid, playtimeTotal, hasVIP, unix_vip, hasDonated, unix_donation) {
+function addPlayer(steamid, playtimeTotal, hasVIP, unix_vip, hasDonated, unix_donation, username) {
     return new Promise(function (resolve, reject) {
         var connection;
         try {
@@ -83,7 +84,7 @@ function addPlayer(username, steamid, playtimeTotal, hasVIP, unix_vip, hasDonate
                 [username, steamid, playtimeTotal, 0, (Date.now() / 1000), hasVIP, unix_vip, hasDonated, unix_donation],
                 (error, results) => {
                     if (error) {
-                        return reject("Unable to save player " + username);
+                        return reject("Unable to save player " + steamid + error);
                     }
                     else {
                         resolve();
@@ -100,21 +101,21 @@ function addPlayer(username, steamid, playtimeTotal, hasVIP, unix_vip, hasDonate
     })
 }
 
-function updatePlayer(playername, steamid, playtimeTotal, playtime, unixPlaytime, hasVIP, unixVIP) {
+function updatePlayer(steamid, playtimeTotal, playtime, unixPlaytime, hasVIP, unixVIP, username) {
     var connection;
     try {
         connection = mysql.createConnection(config);
         connection.query(
             'UPDATE players SET username=?, playtimeTotal=?, playtime=?, unix_playtime=?, hasVIP=?, unix_vip=? WHERE steamid=?',
-            [playername, playtimeTotal, playtime, unixPlaytime, hasVIP, unixVIP, steamid],
+            [username, playtimeTotal, playtime, unixPlaytime, hasVIP, unixVIP, steamid],
             (error, results) => {
                 if (error) {
-                    logger.logError(error);
+                    logger.logError("[WHITELIST] " + error);
                 }
             }
         );
     } catch (err) {
-        logger.logError("Unable to connect to database");
+        logger.logError("[WHITELIST] Unable to connect to database");
     } finally {
         if (connection) {
             connection.end();

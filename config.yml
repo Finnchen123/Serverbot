@@ -4,6 +4,7 @@ REFRESH_TIME: 60
 # All the servers you want to monitor
 SERVERS:
   # If you have multiple servers you can add them to this list. Just copy the SERVER_1 block and paste it similar to SERVER_2 and SERVER_3
+  # IMPORTANT: Gaps in numbers are not allowed. Example: (Good) SERVER_1, SERVER_2, SERVER_3; (Bad) SERVER_1, SERVER_3
   SERVER_1:
     # "IP:Port"
     # example: "127.0.0.1:80"
@@ -14,8 +15,6 @@ SERVERS:
     STATUS_BOT: true
     # If the server is offline, how do you want the servername to be displayed?
     SERVERNAME: "[38.] Infanterie Division I | 38inf.de | > German Language"
-    # The messageID the bot uses to edit in discord (default: "0")
-    MESSAGE_ID: "999973465106939974"
     # Public server stats address from the RCON tool (https://github.com/MarechJ/hll_rcon_tool). Write "none" if not needed
     PUBLIC_STATS: "https://rcon1.38id.de/api/public_info"
     # Link to RCON tool for Whitelist bot. Write "none" if not needed
@@ -26,7 +25,6 @@ SERVERS:
     WHITELIST_BOT: false
     STATUS_BOT: true
     SERVERNAME: "[38.] Infanterie Division II | 38inf.de | > German Language"
-    MESSAGE_ID: "999973466251985026"
     PUBLIC_STATS: "https://rcon2.38id.de/api/public_info"
     RCON: "https://rcon2.38id.de/"
   SERVER_3:
@@ -34,7 +32,6 @@ SERVERS:
     WHITELIST_BOT: false
     STATUS_BOT: true
     SERVERNAME: "[38.] Infanterie Division III | Eventserver"
-    MESSAGE_ID: "999973467103445062"
     PUBLIC_STATS: "https://rcon3.38id.de/api/public_info"
     RCON: "none"
 
@@ -51,13 +48,31 @@ STATUS_BOT_DISCORD:
 WHITELIST_BOT:
   # Add your clan tag or another identification to the list to exclude the players matching the tag from the VIP remove
   EXCLUDED: ["[38.]","[38.R]"]
+  # What message should the bot send if a user is exluced from the whitelist bot?
+  MESSAGE_EXCLUDED: "You are a clan member. You don't have to reach a certain playtime."
+  # What message should the bot send if a user has donated for the VIP?
+  MESSAGE_DONATED: "You already have VIP because of your donation. Thank you for your support."
+  # What message should the bot send if a user got enough playtime for VIP?
+  MESSAGE_GIVE_VIP: "Congratulations! You played enough hours and are now a VIP!"
+  # What message should the bot send if a user doesn't have enough playtime for VIP?
+  MESSAGE_DENY_VIP: "You still have some hours left to play before you can get VIP."
+  # What message should the bot send if a user is already VIP?
+  MESSAGE_ALREADY_VIP: "You already are a VIP on our server."
   # How long does a player have (in days) to get HOURS_TO_REACH until it gets reset?
   TIME_TO_PLAY: 30
   # How long does a player have (in days) the VIP status?
   VIP_AMOUNT: 30
   # How many hours does a player have to play?
-  HOURS_TO_REACH: 200
+  HOURS_TO_REACH: 1
   # Enter the discord channel id the bot should use to interact with the community
-  DC_CHANNEL_PUBLIC: "1000563740124643459"
+  DC_CHANNEL_PUBLIC: "1000672609081495653"
   # Enter the discord channel id the bot should use to log activity
-  DC_CHANNEL_ADMIN: ""
+  DC_CHANNEL_ADMIN: "1000672654463881226"
+  # The link to the image displayed in the public message
+  IMAGE: "https://cdn.discordapp.com/attachments/675743920931602462/985636707686842408/BannerEagle.png"
+  # All discord colors are supported. You can find the extended list here: https://gist.github.com/thomasbnt/b6f455e2c7d743b796917fa3c205f812
+  # A small excerpt: 5763719 (Green), 16705372 (Yellow), 15548997 (Red), 3426654 (Navy), 1752220 (Aqua)
+  COLOR_SUCCESS: 5763719
+  COLOR_ERROR: 15548997
+  # The role to ping for the whitelist bot
+  ROLE_ID: "378875103586418688"
