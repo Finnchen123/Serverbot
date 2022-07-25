@@ -63,7 +63,9 @@ async function startBot(config, players) {
                     else{
                         var daysLeft = config["WHITELIST_BOT"]["TIME_TO_PLAY"] - (((Date.now() / 1000) -  dbPlayer["unix_playtime"]) / 86400);
                         text = config["WHITELIST_BOT"]["MESSAGE_DENY_VIP"] + "\r\nTime left: " + daysLeft.toFixed(1) + " days\r\nCurrent hours: " + dbPlayer["playtime"].toFixed(1) + "/" + config["WHITELIST_BOT"]["HOURS_TO_REACH"];
-                        logger.logVIP("Player " + dbPlayer["username"] + " with steamid " + message.content + " doesn't have VIP anymore");
+                        if(dbPlayer["unix_vip"] != 0){
+                            logger.logVIP("Player " + dbPlayer["username"] + " with steamid " + message.content + " doesn't have VIP anymore");
+                        }
                     }
                 }
                 sendResponse(dbPlayer["username"], config["WHITELIST_BOT"]["COLOR_SUCCESS"], text, config["WHITELIST_BOT"]["IMAGE"]);

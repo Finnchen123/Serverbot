@@ -16,8 +16,10 @@ function logInformation(message) {
         messages.push("INFO: " + message);
     }
     if(loglevelFile <= 0){
-        fs.appendFile(logfile, "INFO: " + message, (err) =>{
-            console.log("ERROR: Couldn't write to file" + err);
+        fs.appendFile(logfile, "INFO: " + message + "\r\n", (err) =>{
+            if(err){
+                console.log("ERROR: Couldn't write to file " + err);
+            }
         });
     }
 }
@@ -28,8 +30,10 @@ function logWarning(message) {
         messages.push("WARN: " + message);
     }
     if(loglevelFile <= 1){
-        fs.appendFile(logfile, "WARN: " + message, (err) =>{
-            console.log("ERROR: Couldn't write to file" + err);
+        fs.appendFile(logfile, "WARN: " + message + "\r\n", (err) =>{
+            if(err){
+                console.log("ERROR: Couldn't write to file" + err);
+            }
         });
     }
 }
@@ -40,8 +44,10 @@ function logError(message) {
         messages.push("ERROR: " + message);
     }
     if(loglevelFile <= 2){
-        fs.appendFile(logfile, "ERROR: " + message, (err) =>{
-            console.log("ERROR: Couldn't write to file" + err);
+        fs.appendFile(logfile, "ERROR: " + message + "\r\n", (err) =>{
+            if(err){
+                console.log("ERROR: Couldn't write to file " + err);
+            }
         });
     }
 }
@@ -52,8 +58,10 @@ function logVIP(message){
         messages.push("VIP: " + message);
     }
     if(loglevelFile <= 3){
-        fs.appendFile(logfile, "VIP: " + message, (err) =>{
-            console.log("ERROR: Couldn't write to file" + err);
+        fs.appendFile(logfile, "VIP: " + message + "\r\n", (err) =>{
+            if(err){
+                console.log("ERROR: Couldn't write to file" + err);
+            }
         });
     }
 }
