@@ -50,7 +50,7 @@ then
     echo "Table exists"
 else
     echo "Table missing. Creating table players"
-    mariadb -e "CREATE TABLE whitelist.players (username text, steamid int(20) not null unique, playtimeTotal double default 0.0, playtime double default 0.0, unix_playtime int, hasVIP bool, unix_vip int, hasDonated bool, unix_donation int);"
+    mariadb -e "CREATE TABLE whitelist.players (username text, steamid char(20) not null unique, playtimeTotal double default 0.0, playtime double default 0.0, unix_playtime int, hasVIP bool, unix_vip int, hasDonated bool, unix_donation int);"
     mariadb -e "Alter table whitelist.players modify username text character set utf8mb4;"
     read -p "Database username: (default:whitelistbot)" username
     read -sp "Database password: " password
