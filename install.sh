@@ -72,7 +72,7 @@ then
     echo "Node exists, skipping installation"
 else
     echo "Installing nvm"
-    wget -qo - "https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh" | bash
+    wget -qO - "https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh" | bash
     source ~/.bashrc
     echo "Installing node v16.14.2"
     nvm install "v16.14.2"
