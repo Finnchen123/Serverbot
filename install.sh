@@ -60,7 +60,7 @@ else
     fi
     mariadb -e "Create user '$username'@'localhost' identified by '$password';"
     mariadb -e "grant all on whitelist.* to '$username'@'localhost' identified by '$password';"
-    mariadb -e "flush priviliges;"
+    mariadb -e "flush privileges;"
 fi
 
 
