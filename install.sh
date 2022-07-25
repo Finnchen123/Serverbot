@@ -28,9 +28,9 @@ then
     echo "DB system exists, skipping installation"
 else
     echo "Installing mariadb"
-    apt-get -qqy install mariadb-server
-    mariadb -e "CREATE DATABASE whitelist;";
-    mysql_secure_installation
+    sudo apt-get -qqy install mariadb-server
+    sudo mariadb -e "CREATE DATABASE whitelist;";
+    sudo mysql_secure_installation
     echo "Finished mariadb installation"
 fi
 
@@ -41,7 +41,7 @@ then
     echo "Database exists"
 else
     echo "Database missing. Creating database whitelist"
-    mariadb -e "CREATE DATABASE whitelist;";
+    sudo mariadb -e "CREATE DATABASE whitelist;";
 fi
 
 #Create table if not already created
@@ -50,17 +50,17 @@ then
     echo "Table exists"
 else
     echo "Table missing. Creating table players"
-    mariadb -e "CREATE TABLE whitelist.players (username text, steamid char(20) not null unique, playtimeTotal double default 0.0, playtime double default 0.0, unix_playtime int, hasVIP bool, unix_vip int, hasDonated bool, unix_donation int);"
-    mariadb -e "Alter table whitelist.players modify username text character set utf8mb4;"
+    sudo mariadb -e "CREATE TABLE whitelist.players (username text, steamid char(20) not null unique, playtimeTotal double default 0.0, playtime double default 0.0, unix_playtime int, hasVIP bool, unix_vip int, hasDonated bool, unix_donation int);"
+    sudo mariadb -e "Alter table whitelist.players modify username text character set utf8mb4;"
     read -p "Database username: (default:whitelistbot)" username
     read -sp "Database password: " password
     if [ -z "$username" ]
     then
         username="whitelistbot"
     fi
-    mariadb -e "Create user '$username'@'localhost' identified by '$password';"
-    mariadb -e "grant all on whitelist.* to '$username'@'localhost' identified by '$password';"
-    mariadb -e "flush privileges;"
+    sudo mariadb -e "Create user '$username'@'localhost' identified by '$password';"
+    sudo mariadb -e "grant all on whitelist.* to '$username'@'localhost' identified by '$password';"
+    sudo mariadb -e "flush privileges;"
 fi
 
 
@@ -72,12 +72,12 @@ then
     echo "Node exists, skipping installation"
 else
     echo "Installing nvm"
-    wget -qO - "https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh" | bash
-    source ~/.bashrc
+    sudo wget -qO - "https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh" | bash
+    sudo source ~/.bashrc
     echo "Installing node v16.14.2"
-    nvm install "v16.14.2"
+    sudo nvm install "v16.14.2"
     echo "Installing npm latest stable"
-    npm install -g npm@latest
+    sudo npm install -g npm@latest
     echo "Finished node installation"
 fi
 
@@ -87,12 +87,12 @@ then
     echo "tmux exists, skipping installation"
 else
     echo "Installing tmux"
-    apt-get -qqy install tmux
+    sudo apt-get -qqy install tmux
     echo "Finished tmux installation"
 fi
 
 #Reloading bash to enable installed commands
-source ~/.bashrc
+sudo source ~/.bashrc
 
 #Check for .env file and create if not in directory
 if [ -f ".env" ];
@@ -110,14 +110,14 @@ fi
 
 #Install necessary packages from npm
 echo "Installing necessary packages"
-npm install
+sudo npm install
 
 if [[ $mode == "start" ]];
 then
     #Starting tmux session for the program
     echo "Starting tmux session for the program"
-    tmux new-session -d -s WhitelistBot
-    tmux send-keys -t WhitelistBot "node index.js" Enter
+    sudo tmux new-session -d -s WhitelistBot
+    sudo tmux send-keys -t WhitelistBot "node index.js" Enter
     echo "Finished program installation and startup. To connect to the console enter 'tmux attach -t WhitelistBot'"
 fi
 
