@@ -32,6 +32,7 @@ async function startBot(config, players) {
     });
 
     client.on('messageCreate', message => {
+        var isExcluded = false;
         if (message.author.bot) return;
         if (message.channel != channelPublic) return;
         if (message.content.length != 17) return;
@@ -46,25 +47,34 @@ async function startBot(config, players) {
                     text = config["WHITELIST_BOT"]["MESSAGE_DONATION"];
                 }
                 else{
-                    //Player already has VIP;
-                    if(dbPlayer["hasVIP"]){
-                        //Player is excluded due to config
-                        if(dbPlayer["unix_vip"] == 0){
+                    config["WHITELIST_BOT"]["EXCLUDED"].forEach(key => {
+                        if(dbPlayer["username"].includes(key)){
                             text = config["WHITELIST_BOT"]["MESSAGE_EXCLUDED"];
+                            isExcluded = true;
                         }
-                        //Player earned his VIP already
+                    })
+                    if(!isExcluded){
+                        //Player already has VIP;
+                        if(dbPlayer["hasVIP"]){
+                            
+                            //Player is excluded due to config
+                            if(dbPlayer["unix_vip"] == 0 ){
+                                text = config["WHITELIST_BOT"]["MESSAGE_EXCLUDED"];
+                            }
+                            //Player earned his VIP already
+                            else{
+                                var daysLeft = config["WHITELIST_BOT"]["VIP_AMOUNT"] - (((Date.now() / 1000) -  dbPlayer["unix_vip"]) / 86400);
+                                text = config["WHITELIST_BOT"]["MESSAGE_GIVE_VIP"] + "\r\nTime left: " + daysLeft.toFixed(1);
+                                logger.logVIP("Player " + dbPlayer["username"] + " with steamid " + message.content + " got VIP");
+                            }
+                        }
+                        //Player doesn't have VIP;
                         else{
-                            var daysLeft = config["WHITELIST_BOT"]["VIP_AMOUNT"] - (((Date.now() / 1000) -  dbPlayer["unix_vip"]) / 86400);
-                            text = config["WHITELIST_BOT"]["MESSAGE_GIVE_VIP"] + "\r\nTime left: " + daysLeft.toFixed(1);
-                            logger.logVIP("Player " + dbPlayer["username"] + " with steamid " + message.content + " got VIP");
-                        }
-                    }
-                    //Player doesn't have VIP;
-                    else{
-                        var daysLeft = config["WHITELIST_BOT"]["TIME_TO_PLAY"] - (((Date.now() / 1000) -  dbPlayer["unix_playtime"]) / 86400);
-                        text = config["WHITELIST_BOT"]["MESSAGE_DENY_VIP"] + "\r\nTime left: " + daysLeft.toFixed(1) + " days\r\nCurrent hours: " + dbPlayer["playtime"].toFixed(1) + "/" + config["WHITELIST_BOT"]["HOURS_TO_REACH"];
-                        if(dbPlayer["unix_vip"] != 0){
-                            logger.logVIP("Player " + dbPlayer["username"] + " with steamid " + message.content + " doesn't have VIP anymore");
+                            var daysLeft = config["WHITELIST_BOT"]["TIME_TO_PLAY"] - (((Date.now() / 1000) -  dbPlayer["unix_playtime"]) / 86400);
+                            text = config["WHITELIST_BOT"]["MESSAGE_DENY_VIP"] + "\r\nTime left: " + daysLeft.toFixed(1) + " days\r\nCurrent hours: " + dbPlayer["playtime"].toFixed(1) + "/" + config["WHITELIST_BOT"]["HOURS_TO_REACH"];
+                            if(dbPlayer["unix_vip"] != 0){
+                                logger.logVIP("Player " + dbPlayer["username"] + " with steamid " + message.content + " doesn't have VIP anymore");
+                            }
                         }
                     }
                 }
