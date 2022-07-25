@@ -48,7 +48,7 @@ else
 fi
 
 #Check if tmux exists
-if [[ $(tmux) ]];
+if [[ $(tmux info) ]];
 then
     echo "tmux exists, skipping installation"
 else
