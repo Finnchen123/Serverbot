@@ -3,6 +3,7 @@
 Install git if not already installed: `apt install git`  
 Get the repository with: `git clone https://github.com/Finnchen123/Serverbot.git`  
 Change into the directory: `cd Serverbot`  
+Make the fileMode unimportant for git: `git config core.fileMode false`  
 Make the install file executable: `chmod +x install.sh`  
 Start the script: `./install.sh install`  
 ## Windows
@@ -24,5 +25,6 @@ Change into the directory if not already there: `cd Serverbot`
 Move the config.yml file: `mv config.yml /tmp/config.yml`  
 Get the latest code: `git pull`  
 Replace the downloaded config: `mv /tmp/config.yml config.yml`  
+Make the install file executable: `chmod +x install.sh`  
 ## Windows
 (WORK IN PROGRESS)

@@ -6,11 +6,11 @@ if [[ $# -eq 0 ]];
 then
     echo "No mode entered, taking default: install"
 else
-    if [[ $1 == "start"]];
+    if [[ $1 == "start" ]];
     then
         mode= "start"
         echo "Mode 'start' selected"
-    else if [[ $1 == "install"]] 
+    else if [[ $1 == "install" ]] 
     then
         mode= "start"
         echo "Mode 'start' selected"
