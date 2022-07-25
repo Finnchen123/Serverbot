@@ -21,9 +21,7 @@ Start the script: `./install.sh start`
 # Updates
 ## Linux
 Change into the directory if not already there: `cd Serverbot`  
-Move the config.yml file: `mv config.yml /tmp/config.yml`  
 Get the latest code: `git pull`  
-Replace the downloaded config: `mv /tmp/config.yml config.yml`  
 Make the install file executable: `chmod +x install.sh`  
 ## Windows
 (WORK IN PROGRESS)
