@@ -29,8 +29,43 @@ then
 else
     echo "Installing mariadb"
     apt-get -y install mariadb
+    mariadb -e "CREATE DATABASE whitelist;";
+    mysql_secure_installation
     echo "Finished mariadb installation"
 fi
+
+#Create database if not already created
+dbExists=$(mysqlshow whitelist)
+if [[ $dbExists == *"Tables"* ]]
+then
+    echo "Database exists"
+else
+    echo "Database missing. Creating database whitelist"
+    mariadb -e "CREATE DATABASE whitelist;";
+fi
+
+#Create table if not already created
+if [[ $dbExists == *"players"* ]]
+then
+    echo "Table exists"
+else
+    echo "Table missing. Creating table players"
+    mariadb -e "CREATE DATABASE whitelist;";
+    mariadb -e "CREATE TABLE players (username text, steamid int(20) not null unique, playtimeTotal double default 0.0, playtime double default 0.0, unix_playtime int, hasVIP bool, unix_vip int, hasDonated bool, unix_donation in);"
+    mariadb -e "Alter table players modify username text character set utf8mb4;"
+    read -p "Database username: (default:whitelistbot)" username
+    read -sp "Database password: " password
+    if [ -z "$username" ]
+    then
+        username="whitelistbot"
+    fi
+    mariadb -e "Create user '$username'@'localhost' identified by '$password';"
+    mariadb -e "grant all on whitelist.* to '$username'@'localhost' identified by '$password';"
+    mariadb -e "flush priviliges;"
+fi
+
+
+
 
 #Check if node exists
 if [[ $(node -v) ]];

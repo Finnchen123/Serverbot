@@ -3,10 +3,9 @@ require('dotenv').config();
 const mysql = require('mysql');
 
 const logger = require('./logger');
-const discord = require("./discord");
 
 const config = {
-    host: '192.168.1.48',
+    host: 'localhost',
     user: process.env.DB_USERNAME,
     password: process.env.DB_PASSWORD,
     database: 'whitelist'

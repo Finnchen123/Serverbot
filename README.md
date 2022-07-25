@@ -12,6 +12,7 @@ Start the script: `./install.sh install`
 You need the following applications installed and setup to run this serverbot
 - https://github.com/MarechJ/hll_rcon_tool
 # Starting the application
+Before the start you should look into the config.yml file and enter a value for **everything**
 ## Linux
 Change into the directory if not already there: `cd Serverbot`  
 Start the script: `./install.sh start`
