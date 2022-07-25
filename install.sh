@@ -28,7 +28,7 @@ then
     echo "DB system exists, skipping installation"
 else
     echo "Installing mariadb"
-    apt-get -qqy install mariadb
+    apt-get -qqy install mariadb-server
     mariadb -e "CREATE DATABASE whitelist;";
     mysql_secure_installation
     echo "Finished mariadb installation"
