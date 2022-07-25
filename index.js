@@ -14,7 +14,7 @@ const response = require("./responseHandler");
 
 var config;
 var players = Array();
-var updatedPlayers = false;
+var updatedPlayers = {};
 
 //Query all the servers listed in the config file
 async function queryServers() {
@@ -25,6 +25,9 @@ async function queryServers() {
     var displayText;
 
     for(var i = 0; i < Object.keys(config["SERVERS"]).length; i++){
+        if(updatedPlayers[i] == null){
+            updatedPlayers[i] = false;
+        }
         var server = config["SERVERS"]["SERVER_"+(i+1)];
         address = server["ADDRESS"];
         hasWhitelistBot = server["WHITELIST_BOT"];
@@ -37,10 +40,10 @@ async function queryServers() {
             //Get steam server information
             response = await steam.queryGameServerInfo(address);
             if (hasWhitelistBot) {
-                if(!updatedPlayers){
+                if(!updatedPlayers[i]){
                     logger.logInformation("[WHITELIST] Loading players for server #"+(i+1));
                     handlePlayers(server["RCON"]);
-                    updatedPlayers = true;
+                    updatedPlayers[i] = true;
                 }
                 else{
                     addPlayerToDB(server["RCON"]);
@@ -258,8 +261,10 @@ async function run() {
         await new Promise(r => setTimeout(r, config["REFRESH_TIME"] * 1000));
         today = new Date();
         if(today.getHours == 1 && (today.getMinutes > 0 && today.getMinutes < 5)){
-            if(updatedPlayers){
-                updatedPlayers = false;
+            for(var i = 0; i < updatedPlayers.length; i++){
+                if(updatedPlayers[i]){
+                    updatedPlayers[i] = false;
+                }
             }
         }
     }
