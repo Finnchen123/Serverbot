@@ -10,7 +10,7 @@ else
     then
         mode= "start"
         echo "Mode 'start' selected"
-    else if [[ $1 == "install" ]] 
+    elif [[ $1 == "install" ]] 
     then
         mode= "start"
         echo "Mode 'start' selected"
