@@ -61,7 +61,7 @@ fi
 source ~/.bashrc
 
 #Check for .env file and create if not in directory
-if [[ $(test -f ".env") ]];
+if [ -f ".env" ];
 then
     echo ".env exists, skipping creation"
 else
@@ -82,7 +82,8 @@ if [[ $mode == "start" ]];
 then
     #Starting tmux session for the program
     echo "Starting tmux session for the program"
-    tmux new-session -d -s WhitelistBot "node index.js"
+    tmux new-session -d -s WhitelistBot
+    tmux send-keys -t WhitelistBot "node index.js" Enter
+    echo "Finished program installation and startup. To connect to the console enter 'tmux attach -t WhitelistBot'"
 fi
 
-echo "Finished program installation and startup. To connect to the console enter 'tmux attach -s WhitelistBot'"
