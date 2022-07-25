@@ -1,6 +1,6 @@
 #!/bin/bash
 
-mode= "install"
+mode="install"
 
 if [[ $# -eq 0 ]];
 then
@@ -8,14 +8,14 @@ then
 else
     if [[ $1 == "start" ]];
     then
-        mode= "start"
+        mode="start"
         echo "Mode 'start' selected"
     elif [[ $1 == "install" ]] 
     then
-        mode= "start"
+        mode="start"
         echo "Mode 'start' selected"
     else
-        mode= "illegal"
+        mode="illegal"
         echo "Unsupported mode: " . $1
         exit 0
     fi
