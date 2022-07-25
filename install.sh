@@ -12,8 +12,8 @@ else
         echo "Mode 'start' selected"
     elif [[ $1 == "install" ]] 
     then
-        mode="start"
-        echo "Mode 'start' selected"
+        mode="install"
+        echo "Mode 'install' selected"
     else
         mode="illegal"
         echo "Unsupported mode: " . $1
