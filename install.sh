@@ -2,7 +2,7 @@
 
 mode= "install"
 
-if [[ $# -eq 0]];
+if [[ $# -eq 0 ]];
 then
     echo "No mode entered, taking default: install"
 else
