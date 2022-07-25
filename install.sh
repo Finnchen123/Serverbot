@@ -28,7 +28,7 @@ then
     echo "DB system exists, skipping installation"
 else
     echo "Installing mariadb"
-    apt-get -y install mariadb
+    apt-get -qqy install mariadb
     mariadb -e "CREATE DATABASE whitelist;";
     mysql_secure_installation
     echo "Finished mariadb installation"
@@ -88,7 +88,7 @@ then
     echo "tmux exists, skipping installation"
 else
     echo "Installing tmux"
-    apt-get -y install tmux
+    apt-get -qqy install tmux
     echo "Finished tmux installation"
 fi
 
