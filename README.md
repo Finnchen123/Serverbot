@@ -19,8 +19,6 @@ Start the script: `./install.sh start`
 ## Windows
 (WORK IN PROGRESS)
 # Updates
-If you want to update your application you have to save your config.yml file in a different directory,
-update with the following command and replace the downloaded config.yml with your config file.
 ## Linux
 Change into the directory if not already there: `cd Serverbot`  
 Move the config.yml file: `mv config.yml /tmp/config.yml`  
