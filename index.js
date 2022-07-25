@@ -14,7 +14,6 @@ const response = require("./responseHandler");
 
 var config;
 var players = Array();
-var updatedPlayers = {};
 
 //Query all the servers listed in the config file
 async function queryServers() {
@@ -40,14 +39,8 @@ async function queryServers() {
             //Get steam server information
             response = await steam.queryGameServerInfo(address);
             if (hasWhitelistBot) {
-                if(!updatedPlayers[i]){
-                    logger.logInformation("[WHITELIST] Loading players for server #"+(i+1));
-                    handlePlayers(server["RCON"]);
-                    updatedPlayers[i] = true;
-                }
-                else{
-                    addPlayerToDB(server["RCON"]);
-                }
+                logger.logInformation("[WHITELIST] Loading players for server #"+(i+1));
+                handlePlayers(server["RCON"]);
             }
             if(hasStatusBot){
                 displayText = "Current map: " + response["map"] + "\r\n Players: " + response["players"] + "/" + response["maxPlayers"] + "\r\n Public: " + (response["visibility"] ? "No" : "Yes");
@@ -104,41 +97,6 @@ async function handlePlayers(urlConfig){
         }
     }
 
-    rcon.logoutRCON(urlConfig + "api/logout", cookies);
-}
-
-async function addPlayerToDB(urlConfig){
-    //Login
-    var result = await rcon.loginRCON(urlConfig + "api/login");
-    var cookies = await response.formatCookies(result);
-    //Get online players from RCON tool
-    result = await rcon.getRCONPlayers(urlConfig, cookies);
-    var rconPlayers = await response.formatRCONPlayers(result);
-    var userdata;
-    var dbPlayer;
-    var username = "";
-    
-    for(var i = 0; i < rconPlayers.length; i++){
-        //Get userdata from rcontool
-        userdata = await rcon.getUserdata(urlConfig, cookies, rconPlayers[i]);
-        if(userdata){
-            userdata = userdata.data["result"];
-        }
-        if(userdata != null){
-            username = utf8.encode(userdata["names"][0]["name"]);
-        }
-        //Add player to list and DB if not already there
-        if(!players.includes(rconPlayers[i].toString())){
-            try{
-                if(userdata != null){
-                    players.push(rconPlayers[i]);
-                    await database.addPlayer(rconPlayers[i].toString(), (userdata["total_playtime_seconds"] / 3600), false, 0, false, 0, username);
-                }
-            }catch(ex){
-                logger.logError("[WHITELIST] " + ex);
-            }
-        }
-    }
     rcon.logoutRCON(urlConfig + "api/logout", cookies);
 }
 
@@ -238,7 +196,6 @@ async function getPublicInfo(url){
 }
 
 async function run() {
-    var today;
     while (true) {
         if (config == null) {
             try {
@@ -259,14 +216,6 @@ async function run() {
         logger.logInformation("[GENERAL] Waiting " + config["REFRESH_TIME"] + " seconds until next query");
         logger.sendToDiscord(discord);
         await new Promise(r => setTimeout(r, config["REFRESH_TIME"] * 1000));
-        today = new Date();
-        if(today.getHours == 1 && (today.getMinutes > 0 && today.getMinutes < 5)){
-            for(var i = 0; i < updatedPlayers.length; i++){
-                if(updatedPlayers[i]){
-                    updatedPlayers[i] = false;
-                }
-            }
-        }
     }
 }
 

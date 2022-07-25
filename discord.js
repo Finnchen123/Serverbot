@@ -72,7 +72,7 @@ async function startBot(config, players) {
             }); 
         }
         else{
-            sendResponse(message.content, config["WHITELIST_BOT"]["COLOR_ERROR"], "SteamID not valid/not in database", config["WHITELIST_BOT"]["IMAGE"]);
+            sendResponse(message.content, config["WHITELIST_BOT"]["COLOR_ERROR"], config["WHITELIST_BOT"]["MESSAGE_INVALID"], config["WHITELIST_BOT"]["IMAGE"]);
         }
     });
 
@@ -85,7 +85,7 @@ async function startBot(config, players) {
 
 function sendResponse(playername, color, text, image){
     const embed = {
-        title: "Whitelist bot VIP check",
+        title: "VIP check",
         color: color,
         fields: [
             {

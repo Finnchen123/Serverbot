@@ -27,3 +27,9 @@ Replace the downloaded config: `mv /tmp/config.yml config.yml`
 Make the install file executable: `chmod +x install.sh`  
 ## Windows
 (WORK IN PROGRESS)
+# Miscellaneous
+## Updating donators
+Open mariadb: `mariadb`  
+Open database: `use whitelist;`  
+Remove donator: `Update table players set hasDonated=false where steamid='[STEAMID]'`  
+Add donator: `Update table players set hasDonated=true where steamid='[STEAMID]'`  

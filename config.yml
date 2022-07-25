@@ -1,4 +1,4 @@
-# Refresh interval for the status bot in seconds
+# Refresh interval for the bot in seconds
 REFRESH_TIME: 60
 
 # The date format that should be displayed in the discord messages
@@ -70,6 +70,8 @@ WHITELIST_BOT:
   MESSAGE_DENY_VIP: ""
   # What message should the bot send if a user is already VIP?
   MESSAGE_ALREADY_VIP: ""
+  # What message should the bot send if a user is not in the Database/SteamID not valid?
+  MESSAGE_INVALID: ""
   # How long does a player have (in days) to get HOURS_TO_REACH until it gets reset?
   TIME_TO_PLAY: 30
   # How long does a player have (in days) the VIP status?
