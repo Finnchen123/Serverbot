@@ -106,7 +106,7 @@ async function displayServer(servername, displayText, color, image, dateFormat) 
         color: color,
         fields: [
             {
-                "name": "Last check: " + getToday(),
+                "name": "Last check: " + getToday(dateFormat),
                 "value": displayText,
                 "inline": true
             }
@@ -124,7 +124,7 @@ async function clearStatusChannel() {
     }
 }
 
-function getToday() {
+function getToday(dateFormat) {
     var today = new Date();
     var dd = String(today.getDate()).padStart(2, '0');
     var mm = String(today.getMonth() + 1).padStart(2, '0');
