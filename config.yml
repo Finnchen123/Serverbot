@@ -1,6 +1,31 @@
 # Refresh interval for the status bot in seconds
 REFRESH_TIME: 60
 
+# The date format that should be displayed in the discord messages
+# 0: dd.mm.yyyy - hh:mm:ss
+# 1: dd/mm/yyyy - hh:mm:ss
+# 2: mm/dd/yyyy - hh:mm:ss
+# 3: dd-mm-yyyy   hh:mm:ss
+# 4: mm-dd-yyyy   hh:mm:ss
+DATE_FORMAT: 0
+
+# The level of information the bot should save locally in a file
+# IMPORTANT: If you choose the lowest loglevel you need a lot of space on your device/server
+# 0: INFO, WARN, ERROR, VIP
+# 1: WARN, ERROR, VIP
+# 2: ERROR, VIP
+# 3: VIP
+# 4: Nothing
+LOGLEVEL_FILE: 0
+
+# The level of information the bot should send to the discord admin channel
+# 0: INFO, WARN, ERROR, VIP
+# 1: WARN, ERROR, VIP
+# 2: ERROR, VIP
+# 3: VIP
+# 4: Nothing
+LOGLEVEL_DISCORD: 0
+
 # All the servers you want to monitor
 SERVERS:
   # If you have multiple servers you can add them to this list. Just copy the SERVER_1 block and paste it similar to SERVER_2 and SERVER_3
@@ -8,71 +33,58 @@ SERVERS:
   SERVER_1:
     # "IP:Port"
     # example: "127.0.0.1:80"
-    ADDRESS: "176.57.168.195:28315"
+    ADDRESS: ""
     # Do you want to include playtime from this server to give out VIP (true/false)?
     WHITELIST_BOT: true
     # Do you want to include the status check for this server (true/false)?
     STATUS_BOT: true
     # If the server is offline, how do you want the servername to be displayed?
-    SERVERNAME: "[38.] Infanterie Division I | 38inf.de | > German Language"
+    SERVERNAME: ""
     # Public server stats address from the RCON tool (https://github.com/MarechJ/hll_rcon_tool). Write "none" if not needed
-    PUBLIC_STATS: "https://rcon1.38id.de/api/public_info"
+    PUBLIC_STATS: ""
     # Link to RCON tool for Whitelist bot. Write "none" if not needed
     # IMPORTANT: If you have "WHITELIST_BOT: true", you have to add a RCON link.
-    RCON: "https://rcon1.38id.de/"
-  SERVER_2:
-    ADDRESS: "176.57.140.83:28315"
-    WHITELIST_BOT: false
-    STATUS_BOT: true
-    SERVERNAME: "[38.] Infanterie Division II | 38inf.de | > German Language"
-    PUBLIC_STATS: "https://rcon2.38id.de/api/public_info"
-    RCON: "https://rcon2.38id.de/"
-  SERVER_3:
-    ADDRESS: "176.57.173.2:28415"
-    WHITELIST_BOT: false
-    STATUS_BOT: true
-    SERVERNAME: "[38.] Infanterie Division III | Eventserver"
-    PUBLIC_STATS: "https://rcon3.38id.de/api/public_info"
-    RCON: "none"
+    RCON: ""
 
 STATUS_BOT_DISCORD:
   # Enter the discord channel id the bot should use to show the current server status
-  DC_CHANNEL_STATUS: "1000563740124643459"
+  DC_CHANNEL_STATUS: ""
   # All discord colors are supported. You can find the extended list here: https://gist.github.com/thomasbnt/b6f455e2c7d743b796917fa3c205f812
   # A small excerpt: 5763719 (Green), 16705372 (Yellow), 15548997 (Red), 3426654 (Navy), 1752220 (Aqua)
   COLOR_ONLINE: 5763719
   COLOR_OFFLINE: 15548997
   # The link to the image displayed in the status message
-  IMAGE: "https://cdn.discordapp.com/attachments/675743920931602462/985636707686842408/BannerEagle.png"
+  IMAGE: ""
 
 WHITELIST_BOT:
   # Add your clan tag or another identification to the list to exclude the players matching the tag from the VIP remove
-  EXCLUDED: ["[38.]","[38.R]"]
+  # Input: ["example1","example2","example3","example4"]
+  EXCLUDED: []
   # What message should the bot send if a user is exluced from the whitelist bot?
-  MESSAGE_EXCLUDED: "You are a clan member. You don't have to reach a certain playtime."
+  MESSAGE_EXCLUDED: ""
   # What message should the bot send if a user has donated for the VIP?
-  MESSAGE_DONATED: "You already have VIP because of your donation. Thank you for your support."
+  MESSAGE_DONATED: ""
   # What message should the bot send if a user got enough playtime for VIP?
-  MESSAGE_GIVE_VIP: "Congratulations! You played enough hours and are now a VIP!"
+  MESSAGE_GIVE_VIP: ""
   # What message should the bot send if a user doesn't have enough playtime for VIP?
-  MESSAGE_DENY_VIP: "You still have some hours left to play before you can get VIP."
+  MESSAGE_DENY_VIP: ""
   # What message should the bot send if a user is already VIP?
-  MESSAGE_ALREADY_VIP: "You already are a VIP on our server."
+  MESSAGE_ALREADY_VIP: ""
   # How long does a player have (in days) to get HOURS_TO_REACH until it gets reset?
   TIME_TO_PLAY: 30
   # How long does a player have (in days) the VIP status?
   VIP_AMOUNT: 30
   # How many hours does a player have to play?
-  HOURS_TO_REACH: 1
+  HOURS_TO_REACH: 100
   # Enter the discord channel id the bot should use to interact with the community
-  DC_CHANNEL_PUBLIC: "1000672609081495653"
+  DC_CHANNEL_PUBLIC: ""
   # Enter the discord channel id the bot should use to log activity
-  DC_CHANNEL_ADMIN: "1000672654463881226"
+  DC_CHANNEL_ADMIN: ""
   # The link to the image displayed in the public message
-  IMAGE: "https://cdn.discordapp.com/attachments/675743920931602462/985636707686842408/BannerEagle.png"
+  IMAGE: ""
   # All discord colors are supported. You can find the extended list here: https://gist.github.com/thomasbnt/b6f455e2c7d743b796917fa3c205f812
   # A small excerpt: 5763719 (Green), 16705372 (Yellow), 15548997 (Red), 3426654 (Navy), 1752220 (Aqua)
   COLOR_SUCCESS: 5763719
   COLOR_ERROR: 15548997
   # The role to ping for the whitelist bot
-  ROLE_ID: "378875103586418688"
+  ROLE_ID: ""

@@ -49,12 +49,12 @@ async function queryServers() {
             if(hasStatusBot){
                 displayText = "Current map: " + response["map"] + "\r\n Players: " + response["players"] + "/" + response["maxPlayers"] + "\r\n Public: " + (response["visibility"] ? "No" : "Yes");
                 displayText = displayText + "\r\n" + await getPublicInfo(server["PUBLIC_STATS"]);
-                discord.displayServer(response["name"], displayText, config["STATUS_BOT_DISCORD"]["COLOR_ONLINE"], config["STATUS_BOT_DISCORD"]["IMAGE"]);
+                discord.displayServer(response["name"], displayText, config["STATUS_BOT_DISCORD"]["COLOR_ONLINE"], config["STATUS_BOT_DISCORD"]["IMAGE"], config["DATE_FORMAT"]);
             }
         } catch(e) {
             logger.logError("[GENERAL] Unable to load server #"+(i+1) + " :" + e);
             if(hasStatusBot){
-                discord.displayServer(server["SERVERNAME"], "The server is currently offline", config["STATUS_BOT_DISCORD"]["COLOR_OFFLINE"], config["STATUS_BOT_DISCORD"]["IMAGE"]);
+                discord.displayServer(server["SERVERNAME"], "The server is currently offline", config["STATUS_BOT_DISCORD"]["COLOR_OFFLINE"], config["STATUS_BOT_DISCORD"]["IMAGE"], config["DATE_FORMAT"]);
             }
         }
     }
@@ -244,6 +244,7 @@ async function run() {
                 logger.logError("[GENERAL] Unable to load config file. Please contact your system administrator");
                 break;
             }
+            logger.setLogLevel(config["LOGLEVEL_DISCORD"], config["LOGLEVEL_FILE"]);
             players = await database.loadSteamIDs();
             await discord.startBot(config, players);
             logger.logInformation("[GENERAL] Loaded configuration");

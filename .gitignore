@@ -4,5 +4,8 @@
 # Output file
 output.json
 
+# Log file
+log.txt
+
 # dependencies
 /node_modules

@@ -1,5 +1,3 @@
-const rcon = require("./RCONConnector");
-
 async function formatCookies(response){
     if(response){
         response = response["headers"]["set-cookie"][0].split(';')[0] + "; " + response["headers"]["set-cookie"][1].split(';')[0];

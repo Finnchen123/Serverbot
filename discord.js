@@ -1,10 +1,9 @@
 require('dotenv').config();
 
-const { Client, GatewayIntentBits, MessageReaction, User, Message, TextChannel } = require("discord.js");
+const { Client, GatewayIntentBits } = require("discord.js");
 
 const logger = require('./logger');
 const database = require("./database");
-const rcon = require('./RCONConnector');
 
 var channelStatus;
 var channelPublic;
@@ -100,7 +99,7 @@ function sendResponse(playername, color, text, image){
     channelPublic.send({ embeds: [embed] });
 }
 
-async function displayServer(servername, displayText, color, image) {
+async function displayServer(servername, displayText, color, image, dateFormat) {
     logger.logInformation("[STATUS] Updating discord status for: " + servername);
     const embed = {
         title: servername,
@@ -153,8 +152,24 @@ function getToday() {
         }
     }
 
-    today = dd + '.' + mm + '.' + yyyy + " - " + hours + ":" + minutes + ":" + seconds;
-
+    switch(dateFormat){
+        case 1:
+            today = dd + '/' + mm + '/' + yyyy + " - " + hours + ":" + minutes + ":" + seconds;
+            break;
+        case 2:
+            today = mm + '/' + dd + '/' + yyyy + " - " + hours + ":" + minutes + ":" + seconds;
+            break;
+        case 3:
+            today = dd + '-' + mm + '-' + yyyy + "   " + hours + ":" + minutes + ":" + seconds;
+            break;
+        case 4:
+            today = mm + '-' + dd + '-' + yyyy + "   " + hours + ":" + minutes + ":" + seconds;
+            break;
+        default:
+            today = dd + '.' + mm + '.' + yyyy + " - " + hours + ":" + minutes + ":" + seconds;
+            break;
+    }
+    
     return today;
 }
 
