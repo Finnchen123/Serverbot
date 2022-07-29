@@ -1,13 +1,16 @@
 const fs = require("fs");
 
+const config = require('./configLoader');
+const api = require('./APIHandler');
+
 var messages = Array();
 var logfile = "log.txt";
 var loglevelDiscord = 0;
 var loglevelFile = 0;
 
-function setLogLevel(dc, file){
-    loglevelDiscord = dc;
-    loglevelFile = file
+function setLogLevel(){
+    loglevelDiscord = config.getConfig()["LOGLEVEL_DISCORD"];
+    loglevelFile = config.getConfig()["LOGLEVEL_FILE"];
 }
 
 function logInformation(message) {
@@ -66,9 +69,9 @@ function logVIP(message){
     }
 }
 
-function sendToDiscord(discord){
+function sendToDiscord(){
     messages.forEach(message => {
-        discord.sendLog(message);
+        api.sendMessage("Serverbot log VIP", config.getConfig()["DISCORD"]["COLOR_NEUTRAL"], "VIP check", message, " ", config.getConfig()["DISCORD"]["ROLE_PING"], config.getConfig()["DISCORD"]["VIP_ADMIN"])
     })
     messages = Array();
 }

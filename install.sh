@@ -120,4 +120,3 @@ then
     sudo tmux send-keys -t WhitelistBot "node index.js" Enter
     echo "Finished program installation and startup. To connect to the console enter 'tmux attach -t WhitelistBot'"
 fi
-

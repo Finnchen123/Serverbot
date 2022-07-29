@@ -46,17 +46,7 @@ SERVERS:
     # IMPORTANT: If you have "WHITELIST_BOT: true", you have to add a RCON link.
     RCON: ""
 
-STATUS_BOT_DISCORD:
-  # Enter the discord channel id the bot should use to show the current server status
-  DC_CHANNEL_STATUS: ""
-  # All discord colors are supported. You can find the extended list here: https://gist.github.com/thomasbnt/b6f455e2c7d743b796917fa3c205f812
-  # A small excerpt: 5763719 (Green), 16705372 (Yellow), 15548997 (Red), 3426654 (Navy), 1752220 (Aqua)
-  COLOR_ONLINE: 5763719
-  COLOR_OFFLINE: 15548997
-  # The link to the image displayed in the status message
-  IMAGE: ""
-
-WHITELIST_BOT:
+VIP_BOT:
   # Add your clan tag or another identification to the list to exclude the players matching the tag from the VIP remove
   # Input: ["example1","example2","example3","example4"]
   EXCLUDED: []
@@ -78,15 +68,24 @@ WHITELIST_BOT:
   VIP_AMOUNT: 30
   # How many hours does a player have to play?
   HOURS_TO_REACH: 100
+
+DISCORD:
+  # The ID of your discord server
+  SERVERID: ""
   # Enter the discord channel id the bot should use to interact with the community
-  DC_CHANNEL_PUBLIC: ""
-  # Enter the discord channel id the bot should use to log activity
-  DC_CHANNEL_ADMIN: ""
-  # The link to the image displayed in the public message
-  IMAGE: ""
+  VIP_PUBLIC: ""
+  # Enter the discord channel id the bot should use to interact with the admins
+  VIP_ADMIN: ""
+  # Enter the discord channel id the bot should use to show the current server status
+  STATUS: ""
+  # The role to ping for the whitelist bot
+  ROLE_PING: ""
   # All discord colors are supported. You can find the extended list here: https://gist.github.com/thomasbnt/b6f455e2c7d743b796917fa3c205f812
   # A small excerpt: 5763719 (Green), 16705372 (Yellow), 15548997 (Red), 3426654 (Navy), 1752220 (Aqua)
   COLOR_SUCCESS: 5763719
   COLOR_ERROR: 15548997
-  # The role to ping for the whitelist bot
-  ROLE_ID: ""
+  COLOR_NEUTRAL: 3426654
+  # The link to the image displayed in the public VIP message
+  VIP_IMAGE: ""
+  # The link to the image displayed in the status message
+  STATUS_IMAGE: ""

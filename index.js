@@ -1,18 +1,18 @@
 require('dotenv').config();
 
 const steam = require("steam-server-query");
-const yaml = require('js-yaml');
-const fs = require('fs');
+
 const axios = require('axios');
-const utf8 = require('utf8');
 
 const logger = require('./logger');
-const discord = require("./discord");
 const database = require("./database");
 const rcon = require("./RCONConnector");
 const response = require("./responseHandler");
+const config = require('./configLoader');
+const time = require('./timeFormatter');
+const Player = require("./player");
+const api = require("./APIHandler");
 
-var config;
 var players = Array();
 
 //Query all the servers listed in the config file
@@ -23,11 +23,11 @@ async function queryServers() {
     var response
     var displayText;
 
-    for(var i = 0; i < Object.keys(config["SERVERS"]).length; i++){
+    for(var i = 0; i < Object.keys(config.getConfig()["SERVERS"]).length; i++){
         if(updatedPlayers[i] == null){
             updatedPlayers[i] = false;
         }
-        var server = config["SERVERS"]["SERVER_"+(i+1)];
+        var server = config.getConfig()["SERVERS"]["SERVER_"+(i+1)];
         address = server["ADDRESS"];
         hasWhitelistBot = server["WHITELIST_BOT"];
         hasStatusBot = server["STATUS_BOT"];
@@ -39,121 +39,71 @@ async function queryServers() {
             //Get steam server information
             response = await steam.queryGameServerInfo(address);
             if (hasWhitelistBot) {
-                logger.logInformation("[WHITELIST] Loading players for server #"+(i+1));
+                logger.logInformation("[VIP] Loading players for server #"+(i+1));
                 handlePlayers(server["RCON"]);
             }
             if(hasStatusBot){
                 displayText = "Current map: " + response["map"] + "\r\n Players: " + response["players"] + "/" + response["maxPlayers"] + "\r\n Public: " + (response["visibility"] ? "No" : "Yes");
                 displayText = displayText + "\r\n" + await getPublicInfo(server["PUBLIC_STATS"]);
-                discord.displayServer(response["name"], displayText, config["STATUS_BOT_DISCORD"]["COLOR_ONLINE"], config["STATUS_BOT_DISCORD"]["IMAGE"], config["DATE_FORMAT"]);
+                api.sendMessage(response["name"], config.getConfig()["DISCORD"]["COLOR_SUCCESS"], "Last check: " + time.getToday(), displayText, config.getConfig()["DISCORD"]["STATUS_IMAGE"], "empty", config.getConfig()["DISCORD"]["STATUS"]);
             }
         } catch(e) {
             logger.logError("[GENERAL] Unable to load server #"+(i+1) + " :" + e);
             if(hasStatusBot){
-                discord.displayServer(server["SERVERNAME"], "The server is currently offline", config["STATUS_BOT_DISCORD"]["COLOR_OFFLINE"], config["STATUS_BOT_DISCORD"]["IMAGE"], config["DATE_FORMAT"]);
+                api.sendMessage(server["SERVERNAME"], config.getConfig()["DISCORD"]["COLOR_ERROR"], "Last check: " + time.getToday(), "The server is currently offline", displayText, config.getConfig()["DISCORD"]["STATUS_IMAGE"], "empty", config.getConfig()["DISCORD"]["STATUS"]);
             }
         }
     }
 }
 
 async function handlePlayers(urlConfig){
+    await new Promise(r => setTimeout(r, config.getConfig()["REFRESH_TIME"] * 5000));
     //Login
     var result = await rcon.loginRCON(urlConfig + "api/login");
     var cookies = await response.formatCookies(result);
     //Get online players from RCON tool
     result = await rcon.getRCONPlayers(urlConfig, cookies);
     var rconPlayers = await response.formatRCONPlayers(result);
-    var vips = await rcon.getVIPs(urlConfig, cookies);
-    vips = vips.data;
     var userdata;
-    var dbPlayer;
     var username = "";
+    var playerExists;
+    var isTagged = false;
     
     for(var i = 0; i < rconPlayers.length; i++){
+        playerExists = false;
         //Get userdata from rcontool
         userdata = await rcon.getUserdata(urlConfig, cookies, rconPlayers[i]);
         
         if(userdata){
             userdata = userdata.data["result"];
         }
-        if(userdata != null){
-            username = utf8.encode(userdata["names"][0]["name"]);
-        }
-        //Add player to list and DB if not already there
-        if(!players.includes(rconPlayers[i].toString())){
-            try{
-                if(userdata != null){
-                    players.push(rconPlayers[i]);
-                    await database.addPlayer(rconPlayers[i].toString(), (userdata["total_playtime_seconds"] / 3600), false, 0, false, 0, username);
+
+        if(userdata == null) continue;
+
+        for(var player in players){
+            if(player.steamid == rconPlayers[i]){
+                playerExists = true;
+                if(!player.hasDonated && !player.hasTag){
+                    player.updatePlaytime(time.getHoursFromSeconds(userdata["total_playtime_seconds"]));
+                    player.hasVIP();
                 }
-            }catch(ex){
-                logger.logError("[WHITELIST] " + ex);
+                break;
             }
         }
-        //Load player from DB
-        dbPlayer = await database.loadPlayer(rconPlayers[i].toString());
-        if(dbPlayer){
-            updatePlayer(dbPlayer, userdata["total_playtime_seconds"], userdata["current_playtime_seconds"], rconPlayers[i], dbPlayer["hasDonated"], username);
+
+        if(!playerExists){
+            username = await api.getUsername(userdata["steamid"]);
+            //Check if player has excluded nameparts
+            for(var key in config.getConfig()["VIP_BOT"]["EXCLUDED"]){
+                if(username.includes(key)){
+                    isTagged = true;
+                    break;
+                }
+            }
+            players.push(new Player(userdata["steamid"], time.getHoursFromSeconds(userdata["total_playtime_seconds"]), 0, new Date(), 0, false, isTagged));
         }
     }
-
     rcon.logoutRCON(urlConfig + "api/logout", cookies);
-}
-
-function updatePlayer(player, totalPlaytime, playtime, steamid, hasDonated, playername){
-    var timePlayed;
-    var daysPassed;
-    var hasVIP = false;
-    var unixPlaytime = 0;
-    var unixVIP = 0;
-
-    //Check if VIP has run out
-    if(hasVIP){
-        if(unixVIP != 0){
-            daysPassed = ((Date.now() / 1000) -  player["unix_vip"]) / 86400;
-            if(daysPassed >= config["WHITELIST_BOT"]["VIP_AMOUNT"]){
-                hasVIP = false;
-                unixVIP = 0;
-            }
-        }
-    }
-
-    //Check if player reached the time played goal from config file
-    timePlayed = ((totalPlaytime / 3600) - player["playtimeTotal"]) + (playtime / 3600);
-    if(timePlayed >= config["WHITELIST_BOT"]["HOURS_TO_REACH"]){
-        hasVIP = true;
-        unixVIP = Date.now() / 1000;
-    }
-
-    //Check if player has time left to reach time goal
-    daysPassed = ((Date.now() / 1000) -  player["unix_playtime"]) / 86400;
-    if(daysPassed >= config["WHITELIST_BOT"]["TIME_TO_PLAY"]){
-        timePlayed = 0;
-        unixPlaytime = Date.now() / 1000;
-    }
-
-    if(unixVIP == 0){
-        unixVIP = player["unix_vip"];
-    }
-    if(unixPlaytime == 0){
-        unixPlaytime = player["unix_playtime"];
-    }
-
-    //Check if player has excluded nameparts
-    config["WHITELIST_BOT"]["EXCLUDED"].forEach(key => {
-        if(playername.includes(key)){
-            hasVIP = true;
-            unixVIP = 0;
-        }
-    })
-
-    //Check if player has donated
-    if(hasDonated){
-        hasVIP = true;
-        unixVIP = 0;
-    }
-
-    database.updatePlayer(steamid, (totalPlaytime / 3600), timePlayed, unixPlaytime, hasVIP, unixVIP, playername);
 }
 
 async function getPublicInfo(url){
@@ -195,27 +145,31 @@ async function getPublicInfo(url){
     return result;
 }
 
+async function savePlayers(){
+    await new Promise(r => setTimeout(r, config.getConfig()["REFRESH_TIME"] * 5000));
+    players.forEach(player => {
+        database.savePlayer(player);
+    });
+}
+
 async function run() {
     while (true) {
         if (config == null) {
-            try {
-                config = yaml.load(fs.readFileSync('./config.yml', 'utf8'));
-            } catch (e) {
-                logger.logError("[GENERAL] Unable to load config file. Please contact your system administrator");
-                break;
-            }
-            logger.setLogLevel(config["LOGLEVEL_DISCORD"], config["LOGLEVEL_FILE"]);
-            players = await database.loadSteamIDs();
-            await discord.startBot(config, players);
+            logger.setLogLevel();
             logger.logInformation("[GENERAL] Loaded configuration");
             logger.logInformation("[GENERAL] Preparing database and loading steam ids");
+            var playerArray = await database.loadPlayers();
+            for(var player in playerArray){
+                players.push(new Player(player["steamid"], player["playtimeTotal"], player["playtime"], player["unix_playtime"], player["unix_vip"], player["hasDonated"], player["hasTag"]));
+            }
         }
         logger.logInformation("[GENERAL] Starting server query");
-        await discord.clearStatusChannel();
+        await api.removeMessages(10);
         await queryServers();
-        logger.logInformation("[GENERAL] Waiting " + config["REFRESH_TIME"] + " seconds until next query");
-        logger.sendToDiscord(discord);
-        await new Promise(r => setTimeout(r, config["REFRESH_TIME"] * 1000));
+        logger.logInformation("[GENERAL] Waiting " + config.getConfig()["REFRESH_TIME"] + " seconds until next query");
+        logger.sendToDiscord();
+        await new Promise(r => setTimeout(r, config.getConfig()["REFRESH_TIME"] * 1000));
+        savePlayers();
     }
 }
 
