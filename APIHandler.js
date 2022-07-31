@@ -10,7 +10,7 @@ const pw = md5(process.env.BOT_PASSWORD);
 const username = process.env.BOT_USERNAME;
 const serverid = config.getConfig()["DISCORD"]["SERVERID"];
 
-function sendMessage(title, colorid, name, message, image, content, channelid){
+function sendMessage(title, colorid, name, message, image, content, channelid, messageid){
     var data = JSON.stringify({
         "username": username,
         "password": pw,
@@ -21,7 +21,8 @@ function sendMessage(title, colorid, name, message, image, content, channelid){
         "image": image,
         "content": content,
         "channelid": channelid,
-        "serverid": serverid
+        "serverid": serverid,
+        "messageid": messageid
     });
 
     var config = {

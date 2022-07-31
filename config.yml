@@ -52,6 +52,13 @@ SERVERS:
     SERVERNAME: "[38.] Infanterie Division II | 38inf.de | > German Language"
     PUBLIC_STATS: "https://rcon2.38id.de/api/public_info"
     RCON: "https://rcon2.38id.de/"
+  SERVER_3:
+    ADDRESS: "176.57.173.2:28415"
+    WHITELIST_BOT: false
+    STATUS_BOT: true
+    SERVERNAME: "[38.] Infanterie Division III | Eventserver"
+    PUBLIC_STATS: "https://rcon3.38id.de/api/public_info"
+    RCON: "https://rcon3.38id.de/"
 
 VIP_BOT:
   # Add your clan tag or another identification to the list to exclude the players matching the tag from the VIP remove

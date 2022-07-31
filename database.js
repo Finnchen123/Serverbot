@@ -5,7 +5,7 @@ const mysql = require('mysql');
 const logger = require('./logger');
 
 const config = {
-    host: '192.168.1.48',
+    host: 'localhost',
     user: process.env.DB_USERNAME,
     password: process.env.DB_PASSWORD,
     database: 'whitelist'
@@ -43,8 +43,8 @@ function savePlayer(player) {
             openConnection();
         }
         connection.query(
-            'INSERT INTO players (steamid, playtimeTotal, playtime, unix_playtime, unix_vip, hasDonated, isExcluded) VALUES (?,?,?,?,?,?,?) ' + 
-            'ON DUPLICATE KEY UPDATE playtimeTotal=?, playtime=?, unix_playtime=?, unix_vip=?, hasDonated=?, isExcluded=?;',
+            'INSERT INTO players (steamid, playtimeTotal, playtime, unix_playtime, unix_vip, hasDonated, hasTag) VALUES (?,?,?,?,?,?,?) ' + 
+            'ON DUPLICATE KEY UPDATE playtimeTotal=?, playtime=?, unix_playtime=?, unix_vip=?, hasDonated=?, hasTag=?;',
             [
                 player.steamid, player.playtimeTotal, player.playtime, player.unix_playtime, player.unix_vip, player.hasDonated, player.hasTag,
                 player.playtimeTotal, player.playtime, player.unix_playtime, player.unix_vip, player.hasDonated, player.hasTag

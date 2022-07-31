@@ -24,10 +24,10 @@ class Player{
         var isVip = (this.unix_vip >= 0) ? true : false;
         var timePassed = today - this.unix_vip;
         //Check if player has reached max VIP time
-        if(time.getDaysFromMilliseconds(timePassed) >= config.getConfig()["VIP_BOT"]["VIP_AMOUNT"]){
+        if(time.getDaysFromSeconds(timePassed) >= config.getConfig()["VIP_BOT"]["VIP_AMOUNT"] && this.unix_vip > 0){
             isVip = false;
             this.unix_vip = -1;
-            api.sendMessage("VIP check", config.getConfig()["DISCORD"]["COLOR_ERROR"], this.steamid, config.getConfig()["VIP_BOT"]["MESSAGE_DENY_ADMIN"], "empty", config.getConfig()["DISCORD"]["VIP_ADMIN"]);
+            api.sendMessage("VIP check", config.getConfig()["DISCORD"]["COLOR_ERROR"], this.steamid, config.getConfig()["VIP_BOT"]["MESSAGE_DENY_ADMIN"], null, "<@&" + config.getConfig()["DISCORD"]["ROLE_PING"] + ">", config.getConfig()["DISCORD"]["VIP_ADMIN"], 0);
         }
         //Check if player has enough playtime to get VIP
         if(this.playtime >= config.getConfig()["VIP_BOT"]["HOURS_TO_REACH"]){
@@ -36,7 +36,7 @@ class Player{
         }
         //Check if player has time left to reach playtime
         var timePassed = today - this.unix_playtime;
-        if(time.getDaysFromMilliseconds(timePassed) >= config.getConfig()["VIP_BOT"]["TIME_TO_PLAY"]){
+        if(time.getDaysFromSeconds(timePassed) >= config.getConfig()["VIP_BOT"]["TIME_TO_PLAY"]){
             this.unix_playtime = today;
             this.playtime = 0;
         }

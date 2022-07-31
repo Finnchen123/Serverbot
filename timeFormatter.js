@@ -50,28 +50,20 @@ function getToday(){
     return today;
 }
 
-function getSecondsFromMilliseconds(ms){
-    return ms / 1000;
+function getMinutesFromMilliseconds(s){
+    return s / 60;
 }
 
-function getMinutesFromMilliseconds(ms){
-    return ms / (60 * 1000);
-}
-
-function getHoursFromMilliseconds(ms){
-    return ms / (60 * 60 * 1000);
-}
-
-function getDaysFromMilliseconds(ms){
-    return ms / (24 * 60 * 60 * 1000)
+function getDaysFromSeconds(s){
+    return s / (24 * 60 * 60)
 }
 
 function getHoursFromSeconds(s){
-    return s / (24 * 60 * 60)
+    return s / (60 * 60)
 }
 
 function getUnix(){
     return Math.floor(new Date().getTime() / 1000);
 }
 
-module.exports = {getToday, getSecondsFromMilliseconds, getMinutesFromMilliseconds, getHoursFromMilliseconds, getDaysFromMilliseconds, getHoursFromSeconds, getUnix}
+module.exports = {getToday, getMinutesFromMilliseconds, getDaysFromSeconds, getHoursFromSeconds, getUnix}

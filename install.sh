@@ -50,8 +50,7 @@ then
     echo "Table exists"
 else
     echo "Table missing. Creating table players"
-    sudo mariadb -e "CREATE TABLE whitelist.players (username text, steamid char(20) not null unique, playtimeTotal double default 0.0, playtime double default 0.0, unix_playtime int, hasVIP bool, unix_vip int, hasDonated bool, unix_donation int);"
-    sudo mariadb -e "Alter table whitelist.players modify username text character set utf8mb4;"
+    sudo mariadb -e "CREATE TABLE whitelist.players (steamid char(20) not null unique, playtimeTotal double default 0.0, playtime double default 0.0, unix_playtime int, unix_vip int, hasDonated bool, hasTag bool);"
     read -p "Database username: (default:whitelistbot)" username
     read -sp "Database password: " password
     if [ -z "$username" ]
@@ -62,9 +61,6 @@ else
     sudo mariadb -e "grant all on whitelist.* to '$username'@'localhost' identified by '$password';"
     sudo mariadb -e "flush privileges;"
 fi
-
-
-
 
 #Check if node exists
 if [[ $(node -v) ]];
@@ -104,13 +100,17 @@ else
     echo "DB_PASSWORD=" >> .env
     echo "RCON_USERNAME=" >> .env
     echo "RCON_PASSWORD=" >> .env
-    echo "BOT_TOKEN=" >> .env
+    echo "BOT_USERNAME=" >> .env
+    echo "BOT_PASSWORD=" >> .env
     echo "Finished .env creation"
+    echo "Please edit the .env file before starting the bot"
 fi
 
 #Install necessary packages from npm
 echo "Installing necessary packages"
 sudo npm install
+
+echo "Finished program installation. Please edit the config.yml file before starting the bot"
 
 if [[ $mode == "start" ]];
 then
@@ -118,5 +118,5 @@ then
     echo "Starting tmux session for the program"
     sudo tmux new-session -d -s WhitelistBot
     sudo tmux send-keys -t WhitelistBot "node index.js" Enter
-    echo "Finished program installation and startup. To connect to the console enter 'tmux attach -t WhitelistBot'"
+    echo "Finished program startup. To connect to the console enter 'tmux attach -t WhitelistBot'"
 fi

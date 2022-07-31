@@ -24,6 +24,10 @@ async function queryServers() {
     var response
     var displayText;
 
+    var color;
+    var channelid = config.getConfig()["DISCORD"]["STATUS"];
+    var image = config.getConfig()["DISCORD"]["STATUS_IMAGE"];
+
     for (var i = 0; i < Object.keys(config.getConfig()["SERVERS"]).length; i++) {
         var server = config.getConfig()["SERVERS"]["SERVER_" + (i + 1)];
         address = server["ADDRESS"];
@@ -43,12 +47,14 @@ async function queryServers() {
             if (hasStatusBot) {
                 displayText = "Current map: " + response["map"] + "\r\n Players: " + response["players"] + "/" + response["maxPlayers"] + "\r\n Public: " + (response["visibility"] ? "No" : "Yes");
                 displayText = displayText + "\r\n" + await getPublicInfo(server["PUBLIC_STATS"]);
-                api.sendMessage(response["name"], config.getConfig()["DISCORD"]["COLOR_SUCCESS"], "Last check: " + time.getToday(), displayText, config.getConfig()["DISCORD"]["STATUS_IMAGE"], "empty", config.getConfig()["DISCORD"]["STATUS"]);
+                color = config.getConfig()["DISCORD"]["COLOR_SUCCESS"];
+                api.sendMessage(response["name"], color, "Last check: " + time.getToday(), displayText, image, "empty", channelid, 0);
             }
         } catch (e) {
             logger.logError("[GENERAL] Unable to load server #" + (i + 1) + " :" + e);
             if (hasStatusBot) {
-                api.sendMessage(server["SERVERNAME"], config.getConfig()["DISCORD"]["COLOR_ERROR"], "Last check: " + time.getToday(), "The server is currently offline", displayText, config.getConfig()["DISCORD"]["STATUS_IMAGE"], "empty", config.getConfig()["DISCORD"]["STATUS"]);
+                color = config.getConfig()["DISCORD"]["COLOR_ERROR"];
+                api.sendMessage(server["SERVERNAME"], color, "Last check: " + time.getToday(), "The server is currently offline", displayText, image, "empty", channelid, 0);
             }
         }
     }
@@ -169,7 +175,7 @@ async function handleMessages() {
     var message = "";
     var color = config.getConfig()["DISCORD"]["COLOR_NEUTRAL"];
     for (var i = 0; i < messages.length; i++) {
-        steamid = messages[i];
+        steamid = messages[i].split("/")[1];
         player = null;
         for (var j = 0; j < players.length; j++) {
             if (players[j].steamid == steamid) {
@@ -187,15 +193,18 @@ async function handleMessages() {
             // Player is exluded
             if (player.hasTag) {
                 message = config.getConfig()["VIP_BOT"]["MESSAGE_EXCLUDED"];
+                color = config.getConfig()["DISCORD"]["COLOR_NEUTRAL"];
             }
             // Player has donated
             else if (player.hasDonated) {
                 message = config.getConfig()["VIP_BOT"]["MESSAGE_DONATED"];
+                color = config.getConfig()["DISCORD"]["COLOR_NEUTRAL"];
             }
             // Player is already VIP
             else if (player.unix_vip > 0) {
                 message = config.getConfig()["VIP_BOT"]["MESSAGE_ALREADY_VIP"]
-                message = message + "\r\nTime left: " + ((config.getConfig()["VIP_BOT"]["VIP_AMOUNT"] - time.getDaysFromMilliseconds(time.getUnix() - player.unix_vip))).toFixed(1) + "/" + config.getConfig()["VIP_BOT"]["VIP_AMOUNT"] + " days";
+                color = config.getConfig()["DISCORD"]["COLOR_NEUTRAL"];
+                message = message + "\r\nTime left: " + ((config.getConfig()["VIP_BOT"]["VIP_AMOUNT"] - time.getDaysFromSeconds(time.getUnix() - player.unix_vip))).toFixed(1) + "/" + config.getConfig()["VIP_BOT"]["VIP_AMOUNT"] + " days";
             }
             else {
                 // Player should be VIP, send Message to admins
@@ -208,19 +217,19 @@ async function handleMessages() {
                         }
                     }
                     color = config.getConfig()["DISCORD"]["COLOR_SUCCESS"];
-                    api.sendMessage("VIP check", config.getConfig()["DISCORD"]["COLOR_SUCCESS"], steamid, config.getConfig()["VIP_BOT"]["MESSAGE_GIVE_ADMIN"], null, "empty", config.getConfig()["DISCORD"]["VIP_ADMIN"]);
+                    api.sendMessage("VIP check", config.getConfig()["DISCORD"]["COLOR_SUCCESS"], steamid, config.getConfig()["VIP_BOT"]["MESSAGE_GIVE_ADMIN"], null, "<@&" + config.getConfig()["DISCORD"]["ROLE_PING"] + ">", config.getConfig()["DISCORD"]["VIP_ADMIN"], 0);
                 }
                 // Player doesn't have enough hours
                 else {
                     message = config.getConfig()["VIP_BOT"]["MESSAGE_DENY_VIP"];
-                    message = message + "\r\nTime left: " + ((config.getConfig()["VIP_BOT"]["TIME_TO_PLAY"] - time.getDaysFromMilliseconds(time.getUnix() - player.unix_playtime))).toFixed(1) + "/" + config.getConfig()["VIP_BOT"]["TIME_TO_PLAY"] + " days";
+                    message = message + "\r\nTime left: " + ((config.getConfig()["VIP_BOT"]["TIME_TO_PLAY"] - time.getDaysFromSeconds(time.getUnix() - player.unix_playtime))).toFixed(1) + "/" + config.getConfig()["VIP_BOT"]["TIME_TO_PLAY"] + " days";
                     message = message + "\r\nTime played: " + player.playtime.toFixed(1) + "/" + config.getConfig()["VIP_BOT"]["HOURS_TO_REACH"];
                     color = config.getConfig()["DISCORD"]["COLOR_ERROR"];
                 }
 
             }
         }
-        api.sendMessage("VIP check", color, username + "/" + steamid, message, config.getConfig()["DISCORD"]["VIP_IMAGE"], "empty", config.getConfig()["DISCORD"]["VIP_PUBLIC"]);
+        api.sendMessage("VIP check", color, username + "/" + steamid, message, config.getConfig()["DISCORD"]["VIP_IMAGE"], "empty", config.getConfig()["DISCORD"]["VIP_PUBLIC"], messages[i].split("/")[0]);
     }
 }
 
@@ -232,7 +241,7 @@ async function run() {
     var player;
     for (var i = 0; i < playerArray.length; i++) {
         player = playerArray[i];
-        players.push(new Player(player["steamid"], player["playtimeTotal"], player["playtime"], player["unix_playtime"], player["unix_vip"], player["hasDonated"], player["isExcluded"]));
+        players.push(new Player(player["steamid"], player["playtimeTotal"], player["playtime"], player["unix_playtime"], player["unix_vip"], player["hasDonated"], player["hasTag"]));
     }
     while (true) {
         database.openConnection();

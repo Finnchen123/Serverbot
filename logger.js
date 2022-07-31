@@ -71,7 +71,7 @@ function logVIP(message){
 
 function sendToDiscord(){
     messages.forEach(message => {
-        api.sendMessage("Serverbot log VIP", config.getConfig()["DISCORD"]["COLOR_NEUTRAL"], "VIP check", message, " ", config.getConfig()["DISCORD"]["ROLE_PING"], config.getConfig()["DISCORD"]["VIP_ADMIN"])
+        api.sendMessage("Serverbot log VIP", config.getConfig()["DISCORD"]["COLOR_NEUTRAL"], "VIP check", message, " ", config.getConfig()["DISCORD"]["ROLE_PING"], config.getConfig()["DISCORD"]["VIP_ADMIN"], 0)
     })
     messages = Array();
 }
