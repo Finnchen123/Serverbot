@@ -5,29 +5,27 @@ const mysql = require('mysql');
 const logger = require('./logger');
 
 const config = {
-    host: '162.168.1.48',
+    host: '192.168.1.48',
     user: process.env.DB_USERNAME,
     password: process.env.DB_PASSWORD,
     database: 'whitelist'
 };
 
-//steamid, playtimeTotal, playtime, unix_playtime, unix_vip, hasDonated, isExcluded
+var connection;
+
+//steamid, playtimeTotal, playtime, unix_playtime, unix_vip, hasDonated, hasTag
 function loadPlayers() {
     return new Promise(function (resolve, reject) {
-        var connection;
         try {
-            connection = mysql.createConnection(config);
-            connection.connect(function (err) {
-                if (err) {
-                    logger.logWarning(err);
-                }
-            });
+            if(!connection){
+                openConnection();
+            }
             connection.query(
                 'SELECT * FROM players',
-                [steamid],
+                [],
                 (error, results) => {
                     if (error) {
-                        return reject("Unable to load players");
+                        return reject(error);
                     } else {
                         resolve(results);
                     }
@@ -35,41 +33,50 @@ function loadPlayers() {
             );
         } catch (err) {
             return reject("Unable to connect to database");
-        } finally {
-            if (connection) {
-                connection.end();
-            }
         }
     })
 }
 
 function savePlayer(player) {
-    var connection;
     try {
-        connection = mysql.createConnection(config);
+        if(!connection){
+            openConnection();
+        }
         connection.query(
             'INSERT INTO players (steamid, playtimeTotal, playtime, unix_playtime, unix_vip, hasDonated, isExcluded) VALUES (?,?,?,?,?,?,?) ' + 
             'ON DUPLICATE KEY UPDATE playtimeTotal=?, playtime=?, unix_playtime=?, unix_vip=?, hasDonated=?, isExcluded=?;',
             [
-                player.steamid, player.playtimeTotal, player.playtime, player.unix_playtime, player.unix_vip, player.hasDonated, player.isExcluded,
-                player.playtimeTotal, player.playtime, player.unix_playtime, player.unix_vip, player.hasDonated, player.isExcluded
+                player.steamid, player.playtimeTotal, player.playtime, player.unix_playtime, player.unix_vip, player.hasDonated, player.hasTag,
+                player.playtimeTotal, player.playtime, player.unix_playtime, player.unix_vip, player.hasDonated, player.hasTag
             ],
             (error, results) => {
                 if (error) {
-                    return reject("Unable to save player " + steamid + error);
-                }
-                else {
-                    resolve();
+                    logger.logError("[GENERAL] Unable to save player " + error);
                 }
             }
         );
     } catch (err) {
-        return reject("Unable to connect to database");
-    } finally {
-        if (connection) {
-            connection.end();
-        }
+        logger.logError("[GENERAL] Unable to connect to database");
     }
 }
 
-module.exports = { loadPlayers, savePlayer }
+function openConnection(){
+    if(!connection){
+        connection = mysql.createConnection(config);
+    }
+    if(connection.state == "disconnected"){
+        connection.connect(function (err) {
+            if (err) {
+                logger.logWarning(err);
+            }
+        });
+    }
+}
+
+function closeConnection(){
+    if (connection) {
+        connection.end();
+    }
+}
+
+module.exports = { loadPlayers, savePlayer, openConnection, closeConnection }

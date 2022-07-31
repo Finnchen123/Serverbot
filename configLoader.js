@@ -1,20 +1,25 @@
 const yaml = require('js-yaml');
 const fs = require('fs');
+const { exit } = require('process');
 
-const configPath = './config.yml';
+const configPath = "./config.yml";
 var config;
 
 function loadConfig(){
     try {
         config = yaml.load(fs.readFileSync(configPath, 'utf8'));
-        fs.close(configPath);
+        return true;
     } catch (e) {
-        logger.logError("[GENERAL] Unable to load config file. Please contact your system administrator");
+        console.log(e);
+        console.log("ERROR: [GENERAL] Unable to load config file. Please contact your system administrator");
+        return false;
     }
 }
 
 function getConfig(){
-    loadConfig();
+    if(config == null){
+        loadConfig();
+    }
     return config;
 }
 

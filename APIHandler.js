@@ -8,7 +8,7 @@ const config = require('./configLoader');
 const url = "https://nicolasovic.ch/api/";
 const pw = md5(process.env.BOT_PASSWORD);
 const username = process.env.BOT_USERNAME;
-const serverid = config.getConfig()["DISCORD_SERVERID"];
+const serverid = config.getConfig()["DISCORD"]["SERVERID"];
 
 function sendMessage(title, colorid, name, message, image, content, channelid){
     var data = JSON.stringify({

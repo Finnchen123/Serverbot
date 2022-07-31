@@ -55,19 +55,23 @@ function getSecondsFromMilliseconds(ms){
 }
 
 function getMinutesFromMilliseconds(ms){
-    return getMinutesFromMilliseconds(ms) / 60;
+    return ms / (60 * 1000);
 }
 
 function getHoursFromMilliseconds(ms){
-    return getMinutesFromMilliseconds(ms) / 60;
+    return ms / (60 * 60 * 1000);
 }
 
 function getDaysFromMilliseconds(ms){
-    return getHoursFromMilliseconds(ms) / 24;
+    return ms / (24 * 60 * 60 * 1000)
 }
 
 function getHoursFromSeconds(s){
-    return getHoursFromMilliseconds(s * 1000);
+    return s / (24 * 60 * 60)
 }
 
-module.exports = {getToday, getSecondsFromMilliseconds, getMinutesFromMilliseconds, getHoursFromMilliseconds, getDaysFromMilliseconds, getHoursFromSeconds}
+function getUnix(){
+    return Math.floor(new Date().getTime() / 1000);
+}
+
+module.exports = {getToday, getSecondsFromMilliseconds, getMinutesFromMilliseconds, getHoursFromMilliseconds, getDaysFromMilliseconds, getHoursFromSeconds, getUnix}
