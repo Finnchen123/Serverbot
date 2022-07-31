@@ -20,7 +20,7 @@ Before the start you should look into the config.yml file and enter a value for 
 You have to request a login to the discord api: finnchennicola@gmail.com (title: Discord API, content: username)  
 (You will receive a password in text from me. The password is saved with md5 and will also be transferred with md5. You just have to enter the credentials to the .env file)  
 Change into the directory if not already there: `cd Serverbot`  
-Edit the config.yml and .env file: `nano (or vim) config.yml`, `nano (or vim) .env`
+Edit the config.yml and .env file: `nano (or vim) config.yml`, `nano (or vim) .env`  
 Start the script: `./install.sh start`
 ## Windows
 (WORK IN PROGRESS)
