@@ -16,7 +16,7 @@ DATE_FORMAT: 0
 # 2: ERROR, VIP
 # 3: VIP
 # 4: Nothing
-LOGLEVEL_FILE: 4
+LOGLEVEL_FILE: 0
 
 # The level of information the bot should send to the discord admin channel
 # 0: INFO, WARN, ERROR, VIP
@@ -24,7 +24,7 @@ LOGLEVEL_FILE: 4
 # 2: ERROR, VIP
 # 3: VIP
 # 4: Nothing
-LOGLEVEL_DISCORD: 3
+LOGLEVEL_DISCORD: 0
 
 # All the servers you want to monitor
 SERVERS:
@@ -33,37 +33,23 @@ SERVERS:
   SERVER_1:
     # "IP:Port"
     # example: "127.0.0.1:80"
-    ADDRESS: "176.57.168.195:28315"
+    ADDRESS: ""
     # Do you want to include playtime from this server to give out VIP (true/false)?
     WHITELIST_BOT: true
     # Do you want to include the status check for this server (true/false)?
     STATUS_BOT: true
     # If the server is offline, how do you want the servername to be displayed?
-    SERVERNAME: "[38.] Infanterie Division I | 38inf.de | > German Language"
+    SERVERNAME: ""
     # Public server stats address from the RCON tool (https://github.com/MarechJ/hll_rcon_tool). Write "none" if not needed
-    PUBLIC_STATS: "https://rcon1.38id.de/api/public_info"
+    PUBLIC_STATS: ""
     # Link to RCON tool for Whitelist bot. Write "none" if not needed
     # IMPORTANT: If you have "WHITELIST_BOT: true", you have to add a RCON link.
-    RCON: "https://rcon1.38id.de/"
-  SERVER_2:
-    ADDRESS: "176.57.140.83:28315"
-    WHITELIST_BOT: true
-    STATUS_BOT: true
-    SERVERNAME: "[38.] Infanterie Division II | 38inf.de | > German Language"
-    PUBLIC_STATS: "https://rcon2.38id.de/api/public_info"
-    RCON: "https://rcon2.38id.de/"
-  SERVER_3:
-    ADDRESS: "176.57.173.2:28415"
-    WHITELIST_BOT: false
-    STATUS_BOT: true
-    SERVERNAME: "[38.] Infanterie Division III | Eventserver"
-    PUBLIC_STATS: "https://rcon3.38id.de/api/public_info"
-    RCON: "https://rcon3.38id.de/"
+    RCON: ""
 
 VIP_BOT:
   # Add your clan tag or another identification to the list to exclude the players matching the tag from the VIP remove
   # Input: ["example1","example2","example3","example4"]
-  EXCLUDED: ["[38.]","[38.R]"]
+  EXCLUDED: []
   # What message should the bot send if a user is exluced from the whitelist bot?
   MESSAGE_EXCLUDED: "You are a clan member. You don't have to reach a certain playtime."
   # What message should the bot send if a user has donated for the VIP?
@@ -89,21 +75,21 @@ VIP_BOT:
 
 DISCORD:
   # The ID of your discord server
-  SERVERID: "378874400184860673"
+  SERVERID: ""
   # Enter the discord channel id the bot should use to interact with the community
-  VIP_PUBLIC: "1000672609081495653"
+  VIP_PUBLIC: ""
   # Enter the discord channel id the bot should use to interact with the admins
-  VIP_ADMIN: "1000672654463881226"
+  VIP_ADMIN: ""
   # Enter the discord channel id the bot should use to show the current server status
-  STATUS: "1000563740124643459"
+  STATUS: ""
   # The role to ping for the whitelist bot
-  ROLE_PING: "378875103586418688"
+  ROLE_PING: ""
   # All discord colors are supported. You can find the extended list here: https://gist.github.com/thomasbnt/b6f455e2c7d743b796917fa3c205f812
   # A small excerpt: 5763719 (Green), 16705372 (Yellow), 15548997 (Red), 3426654 (Navy), 1752220 (Aqua)
   COLOR_SUCCESS: 5763719
   COLOR_ERROR: 15548997
   COLOR_NEUTRAL: 3426654
   # The link to the image displayed in the public VIP message
-  VIP_IMAGE: "https://cdn.discordapp.com/attachments/675743920931602462/985636707686842408/BannerEagle.png"
+  VIP_IMAGE: ""
   # The link to the image displayed in the status message
-  STATUS_IMAGE: "https://cdn.discordapp.com/attachments/675743920931602462/985636707686842408/BannerEagle.png"
+  STATUS_IMAGE: ""
