@@ -36,7 +36,9 @@ function sendMessage(title, colorid, name, message, image, content, channelid, m
         data : data
     };
 
-    return axios(config);
+    return axios(config).catch(error => {
+        console.log(error);
+    });
 }
 
 async function displayServer(title, colorid, name, message, image, content, channelid, index){
@@ -63,7 +65,9 @@ async function displayServer(title, colorid, name, message, image, content, chan
             },
             data : data
         };
-        return axios(config);
+        return axios(config).catch(error => {
+            console.log(error);
+        });
     }
     else{
         servermessages[index] = (await sendMessage(title, colorid, name, message, image, content, channelid, 0)).data["data"];
@@ -88,7 +92,9 @@ function removeMessages(amount, channelid){
         data : data
     };
 
-    return axios(config);
+    return axios(config).catch(error => {
+        console.log(error);
+    });
 }
 
 function getUsername(steamid){
@@ -106,7 +112,9 @@ function getUsername(steamid){
         data : data
     };
 
-    return axios(config);
+    return axios(config).catch(error => {
+        console.log(error);
+    });
 }
 
 function getMessages(){
@@ -125,7 +133,9 @@ function getMessages(){
         data : data
     };
 
-    return axios(config);
+    return axios(config).catch(error => {
+        console.log(error);
+    });
 }
 
 module.exports = {sendMessage, removeMessages, getUsername, getMessages, displayServer}
