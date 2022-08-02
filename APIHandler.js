@@ -106,9 +106,7 @@ function getUsername(steamid){
         data : data
     };
 
-    return axios(config).catch(error => {
-        console.log(error);
-    });
+    return axios(config);
 }
 
 function getMessages(){
