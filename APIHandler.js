@@ -10,6 +10,8 @@ const pw = md5(process.env.BOT_PASSWORD);
 const username = process.env.BOT_USERNAME;
 const serverid = config.getConfig()["DISCORD"]["SERVERID"];
 
+var servermessages = Array();
+
 function sendMessage(title, colorid, name, message, image, content, channelid, messageid){
     var data = JSON.stringify({
         "username": username,
@@ -35,6 +37,37 @@ function sendMessage(title, colorid, name, message, image, content, channelid, m
     };
 
     return axios(config);
+}
+
+async function displayServer(title, colorid, name, message, image, content, channelid, index){
+    if(servermessages[index] != null){
+        var data = JSON.stringify({
+            "username": username,
+            "password": pw,
+            "title": title,
+            "name": name,
+            "colorid": colorid,
+            "message": message,
+            "image": image,
+            "content": content,
+            "channelid": channelid,
+            "serverid": serverid,
+            "messageid": servermessages[index]
+        });
+    
+        var config = {
+            method: 'post',
+            url: url + "updateMessage",
+            headers: { 
+                'Content-Type': 'application/json',
+            },
+            data : data
+        };
+        return axios(config);
+    }
+    else{
+        servermessages[index] = (await sendMessage(title, colorid, name, message, image, content, channelid, 0)).data["data"];
+    }
 }
 
 function removeMessages(amount, channelid){
@@ -95,4 +128,4 @@ function getMessages(){
     return axios(config);
 }
 
-module.exports = {sendMessage, removeMessages, getUsername, getMessages}
+module.exports = {sendMessage, removeMessages, getUsername, getMessages, displayServer}

@@ -48,13 +48,13 @@ async function queryServers() {
                 displayText = "Current map: " + response["map"] + "\r\n Players: " + response["players"] + "/" + response["maxPlayers"] + "\r\n Public: " + (response["visibility"] ? "No" : "Yes");
                 displayText = displayText + "\r\n" + await getPublicInfo(server["PUBLIC_STATS"]);
                 color = config.getConfig()["DISCORD"]["COLOR_SUCCESS"];
-                api.sendMessage(response["name"], color, "Last check: " + time.getToday(), displayText, image, "empty", channelid, 0);
+                api.displayServer(response["name"], color, "Last check: " + time.getToday(), displayText, image, "empty", channelid, i);
             }
         } catch (e) {
             logger.logError("[GENERAL] Unable to load server #" + (i + 1) + " :" + e);
             if (hasStatusBot) {
                 color = config.getConfig()["DISCORD"]["COLOR_ERROR"];
-                api.sendMessage(server["SERVERNAME"], color, "Last check: " + time.getToday(), "The server is currently offline", displayText, image, "empty", channelid, 0);
+                api.displayServer(server["SERVERNAME"], color, "Last check: " + time.getToday(), "The server is currently offline", displayText, image, "empty", channelid, i);
             }
         }
     }
@@ -249,13 +249,12 @@ async function run() {
         messages = (await api.getMessages()).data["data"];
         handleMessages();
         logger.logInformation("[GENERAL] Starting server query");
-        await api.removeMessages(10, config.getConfig()["DISCORD"]["STATUS"]);
         await queryServers();
         logger.logInformation("[GENERAL] Waiting " + config.getConfig()["REFRESH_TIME"] + " seconds until next query");
         logger.sendToDiscord();
         await new Promise(r => setTimeout(r, config.getConfig()["REFRESH_TIME"] * 1000));
         if (!isSaved) {
-            setTimeout(function () { savePlayers(); }, config.getConfig()["REFRESH_TIME"] * 1000);
+            setTimeout(function () { savePlayers(); }, config.getConfig()["REFRESH_TIME"] * 5000);
             isSaved = true;
         }
     }
