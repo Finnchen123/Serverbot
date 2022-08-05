@@ -54,7 +54,11 @@ async function queryServers() {
             logger.logError("[GENERAL] Unable to load server #" + (i + 1) + " :" + e);
             if (hasStatusBot) {
                 color = config.getConfig()["DISCORD"]["COLOR_ERROR"];
-                api.displayServer(server["SERVERNAME"], color, "Last check: " + time.getToday(), "The server is currently offline", displayText, image, "empty", channelid, i);
+                try{
+                    api.displayServer(server["SERVERNAME"], color, "Last check: " + time.getToday(), "The server is currently offline", displayText, image, "empty", channelid, i);
+                }catch(e){
+                    logger.logError("[STATUS] Unable to display offline status for server #" + i);
+                }
             }
         }
     }
