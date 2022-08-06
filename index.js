@@ -56,7 +56,7 @@ async function queryServers() {
                 color = config.getConfig()["DISCORD"]["COLOR_ERROR"];
                 try{
                     api.displayServer(server["SERVERNAME"], color, "Last check: " + time.getToday(), "The server is currently offline", displayText, image, "empty", channelid, i);
-                }catch(e){
+                }catch(ex){
                     logger.logError("[STATUS] Unable to display offline status for server #" + i);
                 }
             }

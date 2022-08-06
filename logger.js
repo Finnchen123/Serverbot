@@ -76,7 +76,6 @@ function sendToDiscord(){
         }catch(e){
             logError("[GENERAL] Unable to send log message to discord");
         }
-        
     })
     messages = Array();
 }
