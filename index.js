@@ -175,16 +175,17 @@ async function getPublicInfo(url) {
 }
 
 async function savePlayers() {
-    try{
-        logger.logInformation("[VIP] Saving players to database");
-        players.forEach(player => {
+    players.forEach(player => {
+        try{
+            logger.logInformation("[VIP] Saving players to database");
             database.savePlayer(player);
-        });
-        isSaved = false;
-    }
-    catch(e){
-        logger.logError("[VIP] Unable to save players to database " + e);
-    }
+        }
+        catch(e){
+            logger.logError("[VIP] Unable to save players to database " + e);
+        }
+    });
+    isSaved = false;
+    
     
 }
 

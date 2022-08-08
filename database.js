@@ -61,15 +61,19 @@ function savePlayer(player) {
 }
 
 function openConnection(){
-    if(!connection){
-        connection = mysql.createConnection(config);
-    }
-    if(connection.state == "disconnected"){
-        connection.connect(function (err) {
-            if (err) {
-                logger.logWarning(err);
-            }
-        });
+    try{
+        if(!connection){
+            connection = mysql.createConnection(config);
+        }
+        if(connection.state == "disconnected"){
+            connection.connect(function (err) {
+                if (err) {
+                    logger.logWarning(err);
+                }
+            });
+        }
+    }catch(ex){
+        logger.logError("[GENERAL] Unable to connect to database " + ex);
     }
 }
 
