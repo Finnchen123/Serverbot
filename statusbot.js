@@ -40,7 +40,7 @@ async function queryServers() {
         var response = await steam.queryGameServerInfo(address).catch(error => {
             logger.logWarning("[STEAM] Unable to load server data for server #" + i + 1)
             color = config.getConfig()["DISCORD"]["COLOR_ERROR"];
-            api.displayServer(server["SERVERNAME"], color, "Last check: " + time.getToday(), "The server is currently offline", displayText, image, "empty", channelid, i).catch(error => {
+            api.displayServer(server["SERVERNAME"], color, "Last check: " + time.getToday(), "The server is currently offline", image, "empty", channelid, i).catch(error => {
                 logger.logError("[DISCORD] Unable to update server status for server #" + i + 1)
             });
             steamAvailable = false;
