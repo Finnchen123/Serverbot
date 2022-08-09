@@ -4,7 +4,6 @@ const axios = require('axios');
 const md5 = require('md5');
 
 const config = require('./configLoader');
-const logger = require('./logger');
 
 const url = "https://nicolasovic.ch/api/";
 const pw = md5(process.env.BOT_PASSWORD);
@@ -38,7 +37,7 @@ function sendMessage(title, colorid, name, message, image, content, channelid, m
     };
 
     return axios(config).catch(function (error) {
-        logger.logWarning("[DISCORD] Unable to send message to discord");
+        console.log("WARN: [DISCORD] Unable to send message to discord");
     });
 }
 
@@ -67,14 +66,14 @@ async function displayServer(title, colorid, name, message, image, content, chan
             data : data
         };
         return axios(config).catch(function (error) {
-            logger.logWarning("[DISCORD] Unable to update server status");
+            console.log("WARN: [DISCORD] Unable to update server status");
         });
     }
     else{
         try{
             servermessages[index] = (await sendMessage(title, colorid, name, message, image, content, channelid, 0)).data["data"];
         }catch(e){
-            logger.logWarning("[STATUS] Unable to send server status " + e);
+            console.log("WARN: [STATUS] Unable to send server status " + e);
         }
         
     }
@@ -99,7 +98,7 @@ function removeMessages(amount, channelid){
     };
 
     return axios(config).catch(function (error) {
-        logger.logWarning("[DISCORD] Unable to remove messages");
+        console.log("WARN: [DISCORD] Unable to remove messages");
     });
 }
 
@@ -119,7 +118,7 @@ function getUsername(steamid){
     };
 
     return axios(config).catch(function (error) {
-        logger.logWarning("[DISCORD] Unable to get username");
+        console.log("WARN: [DISCORD] Unable to get username");
     });
 }
 
@@ -140,7 +139,7 @@ function getMessages(){
     };
 
     return axios(config).catch(function (error) {
-        logger.logWarning("[DISCORD] Unable to receive messages");
+        console.log("WARN: [DISCORD] Unable to receive messages");
     });
 }
 
