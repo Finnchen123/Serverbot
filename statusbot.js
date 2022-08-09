@@ -38,8 +38,8 @@ async function queryServers() {
 
         await steam.queryGameServerInfo(address).then(response => {
             displayText = "Current map: " + response["map"] + "\r\n Players: " + response["players"] + "/" + response["maxPlayers"] + "\r\n Public: " + (response["visibility"] ? "No" : "Yes");
-            getPublicInfo(server["PUBLIC_STATS"]).then(response => {
-                displayText = displayText + "\r\n" + response;
+            getPublicInfo(server["PUBLIC_STATS"]).then(response2 => {
+                displayText = displayText + "\r\n" + response2;
                 api.displayServer(response["name"], color, "Last check: " + time.getToday(), displayText, image, "empty", channelid, i).catch(error => {
                     logger.logError("[DISCORD] Unable to update server status for server #" + i)
                 });
