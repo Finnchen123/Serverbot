@@ -64,7 +64,7 @@ async function getPublicInfo(url) {
     var result = "";
     if (url != "none") {
         logger.logInformation("[RCON] Getting public stats from: " + url);
-        axios(url).then(response => {
+        await axios(url).then(response => {
             var start = response.data["result"]["current_map"]["start"];
             var nextMap = response.data["result"]["next_map"];
             var playtimeSeconds = time.getUnix() - start;
