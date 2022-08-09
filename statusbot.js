@@ -38,15 +38,18 @@ async function queryServers() {
 
         await steam.queryGameServerInfo(address).then(response => {
             displayText = "Current map: " + response["map"] + "\r\n Players: " + response["players"] + "/" + response["maxPlayers"] + "\r\n Public: " + (response["visibility"] ? "No" : "Yes");
-            await getPublicInfo(server["PUBLIC_STATS"]).then(response => {
+            getPublicInfo(server["PUBLIC_STATS"]).then(response => {
                 displayText = displayText + "\r\n" + response;
+                api.displayServer(response["name"], color, "Last check: " + time.getToday(), displayText, image, "empty", channelid, i).catch(error => {
+                    logger.logError("[DISCORD] Unable to update server status for server #" + i)
+                });
             }).catch(error => {
                 logger.logWarning("[RCON] Unable to load public stats for server #" + i)
+                api.displayServer(response["name"], color, "Last check: " + time.getToday(), displayText, image, "empty", channelid, i).catch(error => {
+                    logger.logError("[DISCORD] Unable to update server status for server #" + i)
+                });
             })
             color = config.getConfig()["DISCORD"]["COLOR_SUCCESS"];
-            api.displayServer(response["name"], color, "Last check: " + time.getToday(), displayText, image, "empty", channelid, i).catch(error => {
-                logger.logError("[DISCORD] Unable to update server status for server #" + i)
-            });
         }).catch(error => {
             logger.logWarning("[STEAM] Unable to load server data for server #" + i)
             color = config.getConfig()["DISCORD"]["COLOR_ERROR"];
