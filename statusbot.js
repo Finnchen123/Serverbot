@@ -38,7 +38,7 @@ async function queryServers() {
 
         await steam.queryGameServerInfo(address).then(response => {
             displayText = "Current map: " + response["map"] + "\r\n Players: " + response["players"] + "/" + response["maxPlayers"] + "\r\n Public: " + (response["visibility"] ? "No" : "Yes");
-            getPublicInfo(server["PUBLIC_STATS"]).then(response => {
+            await getPublicInfo(server["PUBLIC_STATS"]).then(response => {
                 displayText = displayText + "\r\n" + response;
             }).catch(error => {
                 logger.logWarning("[RCON] Unable to load public stats for server #" + i)
@@ -93,7 +93,7 @@ async function getPublicInfo(url) {
 
             result = result + "Next map: " + nextMap;
         }).catch(error => {
-            logger.logWarning("[RCON] Unable to load public information " + e);
+            logger.logWarning("[RCON] Unable to load public information " + error);
         });
     }
     return result;
