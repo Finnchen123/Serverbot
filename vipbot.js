@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const steam = require("steam-server-query");
 const axios = require('axios');
 const { parentPort } = require('worker_threads');

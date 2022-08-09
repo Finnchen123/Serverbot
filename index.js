@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const { Worker } = require('worker_threads');
 
 const logger = require('./logger');
