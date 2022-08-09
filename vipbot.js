@@ -16,16 +16,16 @@ var isSaved = false;
 var messages = Array();
 
 parentPort.once('message', (message) => {
+    run();
+});
+
+async function run() {
     var playerArray = await database.loadPlayers();
     var player;
     for (var i = 0; i < playerArray.length; i++) {
         player = playerArray[i];
         players.push(new Player(player["steamid"], player["playtimeTotal"], player["playtime"], player["unix_playtime"], player["unix_vip"], player["hasDonated"], player["hasTag"]));
     }
-    run();
-});
-
-async function run() {
     while (true) {
         for (var i = 0; i < Object.keys(config.getConfig()["SERVERS"]).length; i++) {
             var server = config.getConfig()["SERVERS"]["SERVER_" + (i + 1)];
