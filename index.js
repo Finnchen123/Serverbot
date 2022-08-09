@@ -57,7 +57,7 @@ async function queryServers() {
                 try{
                     api.displayServer(server["SERVERNAME"], color, "Last check: " + time.getToday(), "The server is currently offline", displayText, image, "empty", channelid, i);
                 }catch(ex){
-                    logger.logError("[STATUS] Unable to display offline status for server #" + i);
+                    logger.logWarning("[STATUS] Unable to display offline status for server #" + i);
                 }
             }
         }
@@ -101,15 +101,20 @@ async function handlePlayers(urlConfig) {
                     break;
                 }
             }
-            username = (await api.getUsername(userdata["steam_id_64"]))["data"]["data"];
-            //Check if player has excluded nameparts
-            for (var j = 0; j < config.getConfig()["VIP_BOT"]["EXCLUDED"].length; j++) {
-                key = config.getConfig()["VIP_BOT"]["EXCLUDED"][j];
-                if (username.includes(key)) {
-                    isTagged = true;
-                    break;
+            try{
+                username = (await api.getUsername(userdata["steam_id_64"]))["data"]["data"];
+                //Check if player has excluded nameparts
+                for (var j = 0; j < config.getConfig()["VIP_BOT"]["EXCLUDED"].length; j++) {
+                    key = config.getConfig()["VIP_BOT"]["EXCLUDED"][j];
+                    if (username.includes(key)) {
+                        isTagged = true;
+                        break;
+                    }
                 }
+            }catch(ex){
+                logger.logWarning("[VIP] Unable to load username for " + userdata["steam_id_64"]);
             }
+            
             if (!playerExists) {
                 players.push(new Player(userdata["steam_id_64"], time.getHoursFromSeconds(userdata["total_playtime_seconds"]), 0, time.getUnix(), -1, false, isTagged));
             }
@@ -227,7 +232,7 @@ async function handleMessages() {
                 else if (player.unix_vip > 0) {
                     message = config.getConfig()["VIP_BOT"]["MESSAGE_ALREADY_VIP"]
                     color = config.getConfig()["DISCORD"]["COLOR_NEUTRAL"];
-                    message = message + "\r\nTime left: " + ((config.getConfig()["VIP_BOT"]["VIP_AMOUNT"] - time.getDaysFromSeconds(time.getUnix() - player.unix_vip))).toFixed(1) + "/" + config.getConfig()["VIP_BOT"]["VIP_AMOUNT"] + " days";
+                    message.replace("%d", ((config.getConfig()["VIP_BOT"]["VIP_AMOUNT"] - time.getDaysFromSeconds(time.getUnix() - player.unix_vip))).toFixed(1))
                 }
                 else {
                     // Player should be VIP, send Message to admins
@@ -245,8 +250,9 @@ async function handleMessages() {
                     // Player doesn't have enough hours
                     else {
                         message = config.getConfig()["VIP_BOT"]["MESSAGE_DENY_VIP"];
-                        message = message + "\r\nTime left: " + ((config.getConfig()["VIP_BOT"]["TIME_TO_PLAY"] - time.getDaysFromSeconds(time.getUnix() - player.unix_playtime))).toFixed(1) + "/" + config.getConfig()["VIP_BOT"]["TIME_TO_PLAY"] + " days";
-                        message = message + "\r\nTime played: " + player.playtime.toFixed(1) + "/" + config.getConfig()["VIP_BOT"]["HOURS_TO_REACH"];
+                        message.replace("%d", config.getConfig()["VIP_BOT"]["TIME_TO_PLAY"]);
+                        message.replace("%h1", player.playtime.toFixed(1));
+                        message.replace("%h2", config.getConfig()["VIP_BOT"]["HOURS_TO_REACH"]);
                         color = config.getConfig()["DISCORD"]["COLOR_ERROR"];
                     }
     
@@ -257,7 +263,7 @@ async function handleMessages() {
             }
         }
         try{
-            api.sendMessage("VIP check", color, username + "/" + steamid, message, config.getConfig()["DISCORD"]["VIP_IMAGE"], "empty", config.getConfig()["DISCORD"]["VIP_PUBLIC"], messages[i].split("/")[0]);
+            api.sendMessage("VIP ANFRAGE", color, "Hallo " + username, message, config.getConfig()["DISCORD"]["VIP_IMAGE"], "empty", config.getConfig()["DISCORD"]["VIP_PUBLIC"], messages[i].split("/")[0]);
         }
         catch(e){
             logger.logError("[VIP] Unable to handle message " + e);

@@ -51,7 +51,7 @@ function savePlayer(player) {
             ],
             (error, results) => {
                 if (error) {
-                    logger.logError("[GENERAL] Unable to save player " + error);
+                    logger.logWarning("[GENERAL] Unable to save player " + error);
                 }
             }
         );

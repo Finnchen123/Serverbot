@@ -18,7 +18,7 @@ function getRCONPlayers(url, cookies){
     };
 
     return axios(config).catch(function (error) {
-        logger.logError("[WHITELIST] Unable to receive players from RCON tool at " + url);
+        logger.logWarning("[VIP] Unable to receive players from RCON tool at " + url);
     });
 }
 
@@ -37,7 +37,7 @@ function logoutRCON(url, cookies){
 
     axios(config)
         .catch(function (error) {
-            logger.logError("[GENERAL] Unable to disconnect from RCON tool at " + url);
+            logger.logWarning("[GENERAL] Unable to disconnect from RCON tool at " + url);
         });
 }
 
@@ -93,7 +93,7 @@ function getUserdata(url, cookies, steamid){
     };
 
     return axios(config).catch(function (error) {
-            logger.logError("[WHITELIST] Unable to receive playerdata from RCON tool for player " + steamid);
+            logger.logWarning("[VIP] Unable to receive playerdata from RCON tool for player " + steamid);
     });
 }
 

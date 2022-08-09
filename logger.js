@@ -74,7 +74,7 @@ function sendToDiscord(){
         try{
             api.sendMessage("Serverbot log VIP", config.getConfig()["DISCORD"]["COLOR_NEUTRAL"], "VIP check", message, " ", "empty", config.getConfig()["DISCORD"]["VIP_ADMIN"], 0)
         }catch(e){
-            logError("[GENERAL] Unable to send log message to discord");
+            logWarning("[GENERAL] Unable to send log message to discord");
         }
     })
     messages = Array();
