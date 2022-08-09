@@ -38,10 +38,10 @@ async function queryServers() {
         logger.logInformation("[GENERAL] Query for server #" + (i + 1));
 
         var response = await steam.queryGameServerInfo(address).catch(error => {
-            logger.logWarning("[STEAM] Unable to load server data for server #" + i + 1)
+            logger.logWarning("[STEAM] Unable to load server data for server #" + (i + 1))
             color = config.getConfig()["DISCORD"]["COLOR_ERROR"];
             api.displayServer(server["SERVERNAME"], color, "Last check: " + time.getToday(), "The server is currently offline", image, "empty", channelid, i).catch(error => {
-                logger.logError("[DISCORD] Unable to update server status for server #" + i + 1)
+                logger.logError("[DISCORD] Unable to update server status for server #" + (i + 1))
             });
             steamAvailable = false;
         })
@@ -51,11 +51,11 @@ async function queryServers() {
             await getPublicInfo(server["PUBLIC_STATS"]).then(response2 => {
                 displayText = displayText + "\r\n" + response2;
             }).catch(error => {
-                logger.logWarning("[RCON] Unable to load public stats for server #" + i + 1)
+                logger.logWarning("[RCON] Unable to load public stats for server #" + (i + 1))
             })
             color = config.getConfig()["DISCORD"]["COLOR_SUCCESS"];
             api.displayServer(response["name"], color, "Last check: " + time.getToday(), displayText, image, "empty", channelid, i).catch(error => {
-                logger.logError("[DISCORD] Unable to update server status for server #" + i + 1)
+                logger.logError("[DISCORD] Unable to update server status for server #" + (i + 1))
             });
         }
     }
