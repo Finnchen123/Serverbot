@@ -180,9 +180,9 @@ async function getPublicInfo(url) {
 }
 
 async function savePlayers() {
+    logger.logInformation("[VIP] Saving players to database");
     players.forEach(player => {
         try{
-            logger.logInformation("[VIP] Saving players to database");
             database.savePlayer(player);
         }
         catch(e){
