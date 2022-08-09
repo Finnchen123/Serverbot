@@ -71,7 +71,7 @@ async function displayServer(title, colorid, name, message, image, content, chan
     }
     else{
         try{
-            servermessages[index] = (await sendMessage(title, colorid, name, message, image, content, channelid, 0)).data["data"];
+            servermessages[index] = (await sendMessage(title, colorid, name, message, image, content, channelid, 0))["data"]["data"];
         }catch(e){
             console.log("WARN: [STATUS] Unable to send server status " + e);
         }
