@@ -16,6 +16,12 @@ var isSaved = false;
 var messages = Array();
 
 parentPort.once('message', (message) => {
+    var playerArray = await database.loadPlayers();
+    var player;
+    for (var i = 0; i < playerArray.length; i++) {
+        player = playerArray[i];
+        players.push(new Player(player["steamid"], player["playtimeTotal"], player["playtime"], player["unix_playtime"], player["unix_vip"], player["hasDonated"], player["hasTag"]));
+    }
     run();
 });
 
