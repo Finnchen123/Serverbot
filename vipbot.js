@@ -34,7 +34,7 @@ async function run() {
                 handlePlayers(server["RCON"]);
             }
         }
-        messages = (await api.getMessages()).response.data["data"];
+        messages = (await api.getMessages())["data"]["data"];
         handleMessages();
         if (!isSaved) {
             setTimeout(function () { savePlayers(); }, config.getConfig()["REFRESH_TIME"] * 5000);
@@ -68,7 +68,7 @@ async function handleMessages() {
         else {
             username = "";
             await api.getUsername(steamid).then(response => {
-                username = response.data["data"];
+                username = response["data"]["data"];
             }).catch(error => {
                 logger.logWarning("[API] Unable to retrieve username for " + steamid);
             });
@@ -155,7 +155,7 @@ async function handlePlayers(urlConfig) {
             userdata = await rcon.getUserdata(urlConfig, cookies, rconPlayers[i]);
 
             if (userdata) {
-                userdata = userdata.data["result"];
+                userdata = userdata["data"]["result"];
             }
 
             if (userdata == null) continue;
