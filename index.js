@@ -232,7 +232,7 @@ async function handleMessages() {
                 else if (player.unix_vip > 0) {
                     message = config.getConfig()["VIP_BOT"]["MESSAGE_ALREADY_VIP"]
                     color = config.getConfig()["DISCORD"]["COLOR_NEUTRAL"];
-                    message.replace("%d", ((config.getConfig()["VIP_BOT"]["VIP_AMOUNT"] - time.getDaysFromSeconds(time.getUnix() - player.unix_vip))).toFixed(1))
+                    message = message.replace("%d", ((config.getConfig()["VIP_BOT"]["VIP_AMOUNT"] - time.getDaysFromSeconds(time.getUnix() - player.unix_vip))).toFixed(1))
                 }
                 else {
                     // Player should be VIP, send Message to admins
@@ -250,9 +250,9 @@ async function handleMessages() {
                     // Player doesn't have enough hours
                     else {
                         message = config.getConfig()["VIP_BOT"]["MESSAGE_DENY_VIP"];
-                        message.replace("%d", config.getConfig()["VIP_BOT"]["TIME_TO_PLAY"]);
-                        message.replace("%h1", player.playtime.toFixed(1));
-                        message.replace("%h2", config.getConfig()["VIP_BOT"]["HOURS_TO_REACH"]);
+                        message = message.replace("%d", config.getConfig()["VIP_BOT"]["TIME_TO_PLAY"]);
+                        message = message.replace("%h1", player.playtime.toFixed(1));
+                        message = message.replace("%h2", config.getConfig()["VIP_BOT"]["HOURS_TO_REACH"]);
                         color = config.getConfig()["DISCORD"]["COLOR_ERROR"];
                     }
     
