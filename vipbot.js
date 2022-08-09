@@ -34,7 +34,7 @@ async function run() {
                 handlePlayers(server["RCON"]);
             }
         }
-        messages = (await api.getMessages()).data["data"];
+        messages = (await api.getMessages()).response.data["data"];
         handleMessages();
         if (!isSaved) {
             setTimeout(function () { savePlayers(); }, config.getConfig()["REFRESH_TIME"] * 5000);
