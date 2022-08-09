@@ -12,7 +12,7 @@ parentPort.once('message', (message) => {
 });
 
 async function run() {
-    while(true){
+    while (true) {
         queryServers();
         await new Promise(r => setTimeout(r, config.getConfig()["REFRESH_TIME"] * 1000));
     }
@@ -36,26 +36,23 @@ async function queryServers() {
 
         logger.logInformation("[GENERAL] Query for server #" + (i + 1));
 
-        await steam.queryGameServerInfo(address).then(response => {
-            displayText = "Current map: " + response["map"] + "\r\n Players: " + response["players"] + "/" + response["maxPlayers"] + "\r\n Public: " + (response["visibility"] ? "No" : "Yes");
-            getPublicInfo(server["PUBLIC_STATS"]).then(response2 => {
-                displayText = displayText + "\r\n" + response2;
-                api.displayServer(response["name"], color, "Last check: " + time.getToday(), displayText, image, "empty", channelid, i).catch(error => {
-                    logger.logError("[DISCORD] Unable to update server status for server #" + i)
-                });
-            }).catch(error => {
-                logger.logWarning("[RCON] Unable to load public stats for server #" + i)
-                api.displayServer(response["name"], color, "Last check: " + time.getToday(), displayText, image, "empty", channelid, i).catch(error => {
-                    logger.logError("[DISCORD] Unable to update server status for server #" + i)
-                });
-            })
-            color = config.getConfig()["DISCORD"]["COLOR_SUCCESS"];
-        }).catch(error => {
+        var response = await steam.queryGameServerInfo(address).catch(error => {
             logger.logWarning("[STEAM] Unable to load server data for server #" + i)
             color = config.getConfig()["DISCORD"]["COLOR_ERROR"];
             api.displayServer(server["SERVERNAME"], color, "Last check: " + time.getToday(), "The server is currently offline", displayText, image, "empty", channelid, i).catch(error => {
                 logger.logError("[DISCORD] Unable to update server status for server #" + i)
             });
+        })
+
+        displayText = "Current map: " + response["map"] + "\r\n Players: " + response["players"] + "/" + response["maxPlayers"] + "\r\n Public: " + (response["visibility"] ? "No" : "Yes");
+        await getPublicInfo(server["PUBLIC_STATS"]).then(response2 => {
+            displayText = displayText + "\r\n" + response2;
+        }).catch(error => {
+            logger.logWarning("[RCON] Unable to load public stats for server #" + i)
+        })
+        color = config.getConfig()["DISCORD"]["COLOR_SUCCESS"];
+        api.displayServer(response["name"], color, "Last check: " + time.getToday(), displayText, image, "empty", channelid, i).catch(error => {
+            logger.logError("[DISCORD] Unable to update server status for server #" + i)
         });
     }
 }
