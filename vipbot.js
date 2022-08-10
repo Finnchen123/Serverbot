@@ -18,6 +18,7 @@ var isSaved = false;
 var messages = Array();
 
 parentPort.once('message', (message) => {
+    logger.setLogLevel();
     run();
 });
 
@@ -48,6 +49,7 @@ async function run() {
             isSaved = true;
         }
         await new Promise(r => setTimeout(r, config.getConfig()["REFRESH_TIME"] * 1000));
+        logger.sendToDiscord();
     }
 }
 
