@@ -36,8 +36,13 @@ async function run() {
                 handlePlayers(server["RCON"]);
             }
         }
-        messages = (await api.getMessages())["data"]["data"];
-        handleMessages();
+        try{
+            messages = (await api.getMessages())["data"]["data"];
+            handleMessages();
+        }catch(e){
+            logger.logWarning("[VIP] Unable to load and handle messages");
+        }
+        
         if (!isSaved) {
             setTimeout(function () { savePlayers(); }, config.getConfig()["REFRESH_TIME"] * 5000);
             isSaved = true;
