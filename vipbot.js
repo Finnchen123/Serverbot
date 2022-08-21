@@ -102,7 +102,7 @@ async function handleMessages() {
                 if (player.unix_vip == 0) {
                     message = config.getConfig()["VIP_BOT"]["MESSAGE_GIVE_VIP"];
                     for (var j = 0; j < players.length; j++) {
-                        if (players[j] == player) {
+                        if (players[j].steamid == player.steamid) {
                             players[j].unix_vip = time.getUnix();
                             break;
                         }
