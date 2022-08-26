@@ -30,6 +30,8 @@ function sendMessage(title, colorid, name, message, image, content, channelid, m
     var config = {
         method: 'post',
         url: url + "sendMessage",
+        timeout: 60000,
+        httpsAgent: new https.Agent({ keepAlive: true }),
         headers: { 
             'Content-Type': 'application/json',
         },
