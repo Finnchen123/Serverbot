@@ -1,6 +1,7 @@
 require('dotenv').config();
 
 const axios = require('axios');
+const https = require('https')
 const md5 = require('md5');
 
 const config = require('./configLoader');
@@ -40,7 +41,6 @@ function sendMessage(title, colorid, name, message, image, content, channelid, m
 
     return axios(config).catch(function (error) {
         console.log("WARN: [DISCORD] Unable to send message to discord");
-        console.log(error);
     });
 }
 
@@ -63,6 +63,8 @@ async function displayServer(title, colorid, name, message, image, content, chan
         var config = {
             method: 'post',
             url: url + "updateMessage",
+            timeout: 60000,
+            httpsAgent: new https.Agent({ keepAlive: true }),
             headers: { 
                 'Content-Type': 'application/json',
             },
@@ -96,6 +98,8 @@ function removeMessages(amount, channelid){
     var config = {
         method: 'delete',
         url: url + "removeMessages",
+        timeout: 60000,
+        httpsAgent: new https.Agent({ keepAlive: true }),
         headers: { 
             'Content-Type': 'application/json',
         },
@@ -116,6 +120,8 @@ function getUsername(steamid){
     var config = {
         method: 'get',
         url: url + "getUsername/" + steamid,
+        timeout: 60000,
+        httpsAgent: new https.Agent({ keepAlive: true }),
         headers: { 
             'Content-Type': 'application/json',
         },
@@ -137,6 +143,8 @@ function getMessages(){
     var config = {
         method: 'get',
         url: url + "getMessages",
+        timeout: 60000,
+        httpsAgent: new https.Agent({ keepAlive: true }),
         headers: { 
             'Content-Type': 'application/json',
         },
