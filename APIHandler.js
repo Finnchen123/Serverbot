@@ -38,6 +38,7 @@ function sendMessage(title, colorid, name, message, image, content, channelid, m
 
     return axios(config).catch(function (error) {
         console.log("WARN: [DISCORD] Unable to send message to discord");
+        console.log(error);
     });
 }
 
