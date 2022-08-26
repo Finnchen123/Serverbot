@@ -31,14 +31,13 @@ function sendMessage(title, colorid, name, message, image, content, channelid, m
     var config = {
         method: 'post',
         url: url + "sendMessage",
-        timeout: 60000,
         httpsAgent: new https.Agent({ keepAlive: true }),
         headers: { 
             'Content-Type': 'application/json',
         },
         data : data
     };
-
+    
     return axios(config).catch(function (error) {
         console.log("WARN: [DISCORD] Unable to send message to discord");
     });
@@ -63,7 +62,6 @@ async function displayServer(title, colorid, name, message, image, content, chan
         var config = {
             method: 'post',
             url: url + "updateMessage",
-            timeout: 60000,
             httpsAgent: new https.Agent({ keepAlive: true }),
             headers: { 
                 'Content-Type': 'application/json',
@@ -98,7 +96,6 @@ function removeMessages(amount, channelid){
     var config = {
         method: 'delete',
         url: url + "removeMessages",
-        timeout: 60000,
         httpsAgent: new https.Agent({ keepAlive: true }),
         headers: { 
             'Content-Type': 'application/json',
@@ -120,7 +117,6 @@ function getUsername(steamid){
     var config = {
         method: 'get',
         url: url + "getUsername/" + steamid,
-        timeout: 60000,
         httpsAgent: new https.Agent({ keepAlive: true }),
         headers: { 
             'Content-Type': 'application/json',
@@ -143,7 +139,6 @@ function getMessages(){
     var config = {
         method: 'get',
         url: url + "getMessages",
-        timeout: 60000,
         httpsAgent: new https.Agent({ keepAlive: true }),
         headers: { 
             'Content-Type': 'application/json',
